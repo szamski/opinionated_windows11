@@ -53,6 +53,9 @@ This automated setup script configures a fresh Windows 11 installation with:
 - NordVPN
 - Focusrite Control 2
 
+**Gaming:**
+- Steam
+
 ### ⚙️ System Configuration
 
 **Windows Explorer:**
@@ -91,6 +94,26 @@ This automated setup script configures a fresh Windows 11 installation with:
 - Starship
 - Node.js
 - Docker
+
+### 🖥️ Hardware Detection & Driver Installation
+
+**Automatic Hardware Detection:**
+- Graphics cards (NVIDIA, AMD, Intel)
+- Processors (Intel, AMD)
+- Audio devices (Realtek, Focusrite, etc.)
+- Network adapters (WiFi, Ethernet, Bluetooth)
+- Storage devices
+- System manufacturer information
+
+**Smart Driver Installation:**
+- NVIDIA GeForce Experience (for NVIDIA GPUs)
+- AMD Adrenalin Edition (for AMD GPUs)
+- Intel Driver & Support Assistant (for Intel systems)
+- Manufacturer-specific tools:
+  - Lenovo System Update
+  - Dell Command Update
+  - HP Support Assistant
+- Windows Update integration for remaining drivers
 
 ### 🐧 WSL (Windows Subsystem for Linux)
 
@@ -134,11 +157,14 @@ You can skip certain parts of the setup:
 # Skip environment variables setup
 .\setup.ps1 -SkipEnvironment
 
+# Skip hardware detection and driver installation
+.\setup.ps1 -SkipDrivers
+
 # Skip WSL installation
 .\setup.ps1 -SkipWSL
 
 # Combine multiple skips
-.\setup.ps1 -SkipWSL -SkipSystemConfig
+.\setup.ps1 -SkipWSL -SkipSystemConfig -SkipDrivers
 ```
 
 ## 📁 Project Structure
@@ -152,6 +178,8 @@ opinionated_windows11/
 │   ├── install-software.ps1    # Winget software installer
 │   ├── configure-system.ps1    # Windows settings configurator
 │   ├── setup-env.ps1           # Environment variables setup
+│   ├── detect-hardware.ps1     # Hardware detection module
+│   ├── install-drivers.ps1     # Driver installation module
 │   └── enable-wsl.ps1          # WSL installer
 └── README.md                    # This file
 ```

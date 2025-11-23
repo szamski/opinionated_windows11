@@ -9,6 +9,7 @@
     - Essential software installation via winget
     - Custom system settings and preferences
     - Environment variables and PATH configuration
+    - Hardware detection and driver installation
     - Windows Subsystem for Linux (WSL)
 
     This script is designed to be run immediately after a fresh Windows 11 installation.
@@ -21,6 +22,9 @@
 
 .PARAMETER SkipEnvironment
     Skip environment variables setup
+
+.PARAMETER SkipDrivers
+    Skip hardware detection and driver installation
 
 .PARAMETER SkipWSL
     Skip WSL installation
@@ -42,6 +46,7 @@ param(
     [switch]$SkipSoftware,
     [switch]$SkipSystemConfig,
     [switch]$SkipEnvironment,
+    [switch]$SkipDrivers,
     [switch]$SkipWSL
 )
 
@@ -155,6 +160,7 @@ Write-ColorOutput "`nSetup Configuration:" "White"
 Write-ColorOutput "  Software Installation: $(if ($SkipSoftware) { 'SKIPPED' } else { 'ENABLED' })" $(if ($SkipSoftware) { "Yellow" } else { "Green" })
 Write-ColorOutput "  System Configuration: $(if ($SkipSystemConfig) { 'SKIPPED' } else { 'ENABLED' })" $(if ($SkipSystemConfig) { "Yellow" } else { "Green" })
 Write-ColorOutput "  Environment Variables: $(if ($SkipEnvironment) { 'SKIPPED' } else { 'ENABLED' })" $(if ($SkipEnvironment) { "Yellow" } else { "Green" })
+Write-ColorOutput "  Driver Installation: $(if ($SkipDrivers) { 'SKIPPED' } else { 'ENABLED' })" $(if ($SkipDrivers) { "Yellow" } else { "Green" })
 Write-ColorOutput "  WSL Installation: $(if ($SkipWSL) { 'SKIPPED' } else { 'ENABLED' })" $(if ($SkipWSL) { "Yellow" } else { "Green" })
 
 Write-ColorOutput "`nPress Ctrl+C to cancel, or" "Yellow"
@@ -204,11 +210,34 @@ if (-not $SkipEnvironment) {
     }
 }
 
-# Module 4: WSL Installation
+# Module 4: Hardware Detection & Driver Installation
+if (-not $SkipDrivers) {
+    # Step 4a: Detect Hardware
+    $executedModules++
+    $modulePath = Join-Path $ScriptRoot "scripts\detect-hardware.ps1"
+    if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "Hardware Detection" -Description "STEP 4a: Detecting System Hardware") {
+        $successfulModules++
+    }
+    else {
+        $failedModules += "Hardware Detection"
+    }
+
+    # Step 4b: Install Drivers
+    $executedModules++
+    $modulePath = Join-Path $ScriptRoot "scripts\install-drivers.ps1"
+    if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "Driver Installation" -Description "STEP 4b: Installing Hardware Drivers") {
+        $successfulModules++
+    }
+    else {
+        $failedModules += "Driver Installation"
+    }
+}
+
+# Module 5: WSL Installation
 if (-not $SkipWSL) {
     $executedModules++
     $modulePath = Join-Path $ScriptRoot "scripts\enable-wsl.ps1"
-    if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "WSL Installation" -Description "STEP 4: Installing Windows Subsystem for Linux") {
+    if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "WSL Installation" -Description "STEP 5: Installing Windows Subsystem for Linux") {
         $successfulModules++
     }
     else {

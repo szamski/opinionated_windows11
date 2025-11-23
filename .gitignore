@@ -1,6 +1,9 @@
 # Setup logs
 setup-log-*.txt
 
+# Hardware detection output
+hardware-info.json
+
 # Windows thumbnail cache
 Thumbs.db
 ehthumbs.db

@@ -121,6 +121,15 @@
           "name": "Focusrite Control 2"
         }
       ]
+    },
+    "gaming": {
+      "description": "Gaming platforms",
+      "packages": [
+        {
+          "id": "Valve.Steam",
+          "name": "Steam"
+        }
+      ]
     }
   }
 }
