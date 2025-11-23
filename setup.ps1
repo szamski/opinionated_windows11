@@ -63,12 +63,89 @@ param(
 # Configuration
 # ========================================
 $ErrorActionPreference = "Continue"
-$ScriptRoot = $PSScriptRoot
-$LogFile = Join-Path $ScriptRoot "setup-log-$(Get-Date -Format 'yyyy-MM-dd-HHmmss').txt"
+
+# Handle both local file execution and remote execution (irm | iex)
+$ScriptRoot = if ($PSScriptRoot) { $PSScriptRoot } else { $env:TEMP }
+$LogFile = if ($PSScriptRoot) {
+    Join-Path $ScriptRoot "setup-log-$(Get-Date -Format 'yyyy-MM-dd-HHmmss').txt"
+} else {
+    Join-Path $env:TEMP "opinionated-windows11-setup-log-$(Get-Date -Format 'yyyy-MM-dd-HHmmss').txt"
+}
 
 # Set global dry-run flag for child scripts
 if ($DryRun) {
     $env:DRYRUN_MODE = "true"
+}
+
+# ========================================
+# Handle Remote Execution (irm | iex)
+# ========================================
+# If script is running from memory (via irm | iex), clone the repository first
+if (-not $PSScriptRoot) {
+    Write-Host "`n========================================" -ForegroundColor Magenta
+    Write-Host "  Remote Installation Detected" -ForegroundColor Magenta
+    Write-Host "========================================" -ForegroundColor Magenta
+    Write-Host "`nThe script is running remotely. Downloading repository..." -ForegroundColor Yellow
+
+    $repoUrl = "https://github.com/szamski/opinionated_windows11"
+    $targetDir = Join-Path $env:USERPROFILE "opinionated_windows11"
+
+    # Check if git is available
+    try {
+        $null = git --version 2>&1
+        $gitAvailable = $LASTEXITCODE -eq 0
+    }
+    catch {
+        $gitAvailable = $false
+    }
+
+    if ($gitAvailable) {
+        Write-Host "Cloning repository to: $targetDir" -ForegroundColor Cyan
+
+        # Remove existing directory if present
+        if (Test-Path $targetDir) {
+            Write-Host "Removing existing directory..." -ForegroundColor Yellow
+            Remove-Item -Path $targetDir -Recurse -Force -ErrorAction SilentlyContinue
+        }
+
+        # Clone the repository
+        git clone $repoUrl $targetDir 2>&1 | Out-Null
+
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "Repository cloned successfully!" -ForegroundColor Green
+            Write-Host "`nRestarting script from local copy..." -ForegroundColor Cyan
+
+            # Build the command with all current parameters
+            $params = @{}
+            if ($SkipSoftware) { $params['SkipSoftware'] = $true }
+            if ($SkipSystemConfig) { $params['SkipSystemConfig'] = $true }
+            if ($SkipEnvironment) { $params['SkipEnvironment'] = $true }
+            if ($SkipDrivers) { $params['SkipDrivers'] = $true }
+            if ($SkipWSL) { $params['SkipWSL'] = $true }
+            if ($DryRun) { $params['DryRun'] = $true }
+            if ($NoMenu) { $params['NoMenu'] = $true }
+
+            $scriptPath = Join-Path $targetDir "setup.ps1"
+
+            # Re-execute the script from the cloned repository
+            Set-Location $targetDir
+            & $scriptPath @params
+            exit
+        }
+        else {
+            Write-Host "Failed to clone repository!" -ForegroundColor Red
+            Write-Host "Please clone manually: git clone $repoUrl" -ForegroundColor Yellow
+            exit 1
+        }
+    }
+    else {
+        Write-Host "Git is not installed!" -ForegroundColor Red
+        Write-Host "`nPlease either:" -ForegroundColor Yellow
+        Write-Host "  1. Install git first, then run this command again" -ForegroundColor White
+        Write-Host "  2. Or manually clone: git clone $repoUrl" -ForegroundColor White
+        Write-Host "     Then run: cd opinionated_windows11; .\setup.ps1" -ForegroundColor White
+        exit 1
+    }
 }
 
 # ========================================

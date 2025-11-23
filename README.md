@@ -26,6 +26,13 @@ Open PowerShell as Administrator and run:
 irm https://raw.githubusercontent.com/szamski/opinionated_windows11/main/setup.ps1 | iex
 ```
 
+**What happens:**
+1. The script detects it's running remotely
+2. Automatically clones the repository to `%USERPROFILE%\opinionated_windows11`
+3. Restarts from the local copy with the interactive menu
+
+**Note:** Git must be installed for the one-liner to work. If Git is not available, the script will provide manual installation instructions.
+
 ## ✨ What This Does
 
 This automated setup script configures a fresh Windows 11 installation with:
