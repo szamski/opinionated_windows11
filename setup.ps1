@@ -113,9 +113,8 @@ if (-not $PSScriptRoot) {
 
         if ($LASTEXITCODE -eq 0) {
             Write-Host "Repository cloned successfully!" -ForegroundColor Green
-            Write-Host "`nRestarting script from local copy..." -ForegroundColor Cyan
-            Write-Host "Press any key to continue..." -ForegroundColor Yellow
-            $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+            Write-Host "`nLaunching setup script..." -ForegroundColor Cyan
+            Write-Host ""
 
             # Build the command with all current parameters
             $paramString = @()
@@ -130,10 +129,36 @@ if (-not $PSScriptRoot) {
             $scriptPath = Join-Path $targetDir "setup.ps1"
             $params = $paramString -join " "
 
-            # Re-execute the script in a new PowerShell window with admin privileges
-            $arguments = "-NoExit -ExecutionPolicy Bypass -File `"$scriptPath`" $params"
-            Start-Process powershell.exe -ArgumentList $arguments -Verb RunAs -WorkingDirectory $targetDir
-            exit
+            # Build PowerShell command
+            $psCommand = "Set-Location '$targetDir'; & '$scriptPath' $params"
+
+            Write-Host "Opening new PowerShell window (with Administrator privileges)..." -ForegroundColor Yellow
+            Write-Host "If UAC prompts, please click 'Yes' to continue." -ForegroundColor Yellow
+            Write-Host ""
+            Start-Sleep -Seconds 2
+
+            # Launch new PowerShell window with admin privileges
+            $startProcessParams = @{
+                FilePath = "powershell.exe"
+                ArgumentList = @("-NoExit", "-ExecutionPolicy", "Bypass", "-Command", $psCommand)
+                Verb = "RunAs"
+            }
+
+            try {
+                Start-Process @startProcessParams
+                Write-Host "New window launched successfully!" -ForegroundColor Green
+                Write-Host "You can close this window." -ForegroundColor Gray
+                Start-Sleep -Seconds 3
+                exit 0
+            }
+            catch {
+                Write-Host "Failed to launch with administrator privileges: $_" -ForegroundColor Red
+                Write-Host "`nPlease run manually:" -ForegroundColor Yellow
+                Write-Host "  cd $targetDir" -ForegroundColor Cyan
+                Write-Host "  .\setup.ps1" -ForegroundColor Cyan
+                Read-Host "`nPress Enter to exit"
+                exit 1
+            }
         }
         else {
             Write-Host "Failed to clone repository!" -ForegroundColor Red
