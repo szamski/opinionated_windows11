@@ -55,7 +55,8 @@ param(
     [switch]$SkipEnvironment,
     [switch]$SkipDrivers,
     [switch]$SkipWSL,
-    [switch]$DryRun
+    [switch]$DryRun,
+    [switch]$NoMenu
 )
 
 # ========================================
@@ -128,6 +129,155 @@ function Invoke-ScriptModule {
         Write-ColorOutput "`n✗ Error executing $ModuleName : $_" "Red"
         Write-ColorOutput $_.ScriptStackTrace "Red"
         return $false
+    }
+}
+
+function Show-Menu {
+    Clear-Host
+    Write-ColorOutput @"
+
+    ╔═══════════════════════════════════════════════════════════╗
+    ║                                                           ║
+    ║          Windows 11 Automated Setup Script               ║
+    ║          Opinionated & Optimized                         ║
+    ║                                                           ║
+    ╚═══════════════════════════════════════════════════════════╝
+
+"@ "Cyan"
+
+    Write-ColorOutput "Select Installation Mode:" "White"
+    Write-ColorOutput ""
+    Write-ColorOutput "  1. Full Installation (Recommended)" "Green"
+    Write-ColorOutput "     Install everything: software, drivers, WSL, and configure system" "Gray"
+    Write-ColorOutput ""
+    Write-ColorOutput "  2. Dry-Run Mode (Preview Only)" "Cyan"
+    Write-ColorOutput "     See what would be installed without making changes" "Gray"
+    Write-ColorOutput ""
+    Write-ColorOutput "  3. Custom Installation" "Yellow"
+    Write-ColorOutput "     Choose which components to install" "Gray"
+    Write-ColorOutput ""
+    Write-ColorOutput "  4. Quick Install (Skip Drivers & WSL)" "Magenta"
+    Write-ColorOutput "     Install software and configure system only" "Gray"
+    Write-ColorOutput ""
+    Write-ColorOutput "  Q. Quit" "Red"
+    Write-ColorOutput ""
+
+    $choice = Read-Host "Enter your choice (1-4, Q)"
+    return $choice
+}
+
+function Show-CustomMenu {
+    Clear-Host
+    Write-ColorOutput "═══════════════════════════════════════" "Cyan"
+    Write-ColorOutput "  Custom Installation Options" "Cyan"
+    Write-ColorOutput "═══════════════════════════════════════" "Cyan"
+    Write-ColorOutput ""
+
+    $options = @{
+        Software = $true
+        SystemConfig = $true
+        Environment = $true
+        Drivers = $true
+        WSL = $true
+        DryRun = $false
+    }
+
+    while ($true) {
+        Write-ColorOutput "Select components to install:" "White"
+        Write-ColorOutput ""
+        Write-ColorOutput "  1. [$(if ($options.Software) { 'X' } else { ' ' })] Software Installation" $(if ($options.Software) { "Green" } else { "Gray" })
+        Write-ColorOutput "  2. [$(if ($options.SystemConfig) { 'X' } else { ' ' })] System Configuration" $(if ($options.SystemConfig) { "Green" } else { "Gray" })
+        Write-ColorOutput "  3. [$(if ($options.Environment) { 'X' } else { ' ' })] Environment Variables" $(if ($options.Environment) { "Green" } else { "Gray" })
+        Write-ColorOutput "  4. [$(if ($options.Drivers) { 'X' } else { ' ' })] Hardware Drivers" $(if ($options.Drivers) { "Green" } else { "Gray" })
+        Write-ColorOutput "  5. [$(if ($options.WSL) { 'X' } else { ' ' })] Windows Subsystem for Linux (WSL)" $(if ($options.WSL) { "Green" } else { "Gray" })
+        Write-ColorOutput ""
+        Write-ColorOutput "  D. [$(if ($options.DryRun) { 'X' } else { ' ' })] Dry-Run Mode (Preview Only)" $(if ($options.DryRun) { "Cyan" } else { "Gray" })
+        Write-ColorOutput ""
+        Write-ColorOutput "  S. Start Installation" "Green"
+        Write-ColorOutput "  B. Back to Main Menu" "Yellow"
+        Write-ColorOutput ""
+
+        $choice = Read-Host "Toggle option (1-5, D) or Start (S) / Back (B)"
+
+        switch ($choice.ToUpper()) {
+            '1' { $options.Software = -not $options.Software }
+            '2' { $options.SystemConfig = -not $options.SystemConfig }
+            '3' { $options.Environment = -not $options.Environment }
+            '4' { $options.Drivers = -not $options.Drivers }
+            '5' { $options.WSL = -not $options.WSL }
+            'D' { $options.DryRun = -not $options.DryRun }
+            'S' { return $options }
+            'B' { return $null }
+        }
+
+        Clear-Host
+        Write-ColorOutput "═══════════════════════════════════════" "Cyan"
+        Write-ColorOutput "  Custom Installation Options" "Cyan"
+        Write-ColorOutput "═══════════════════════════════════════" "Cyan"
+        Write-ColorOutput ""
+    }
+}
+
+# ========================================
+# Interactive Menu (if not running with parameters)
+# ========================================
+if (-not $NoMenu -and -not $PSBoundParameters.ContainsKey('SkipSoftware') -and
+    -not $PSBoundParameters.ContainsKey('SkipSystemConfig') -and
+    -not $PSBoundParameters.ContainsKey('SkipEnvironment') -and
+    -not $PSBoundParameters.ContainsKey('SkipDrivers') -and
+    -not $PSBoundParameters.ContainsKey('SkipWSL') -and
+    -not $PSBoundParameters.ContainsKey('DryRun')) {
+
+    $menuChoice = Show-Menu
+
+    switch ($menuChoice) {
+        '1' {
+            # Full Installation - no changes needed, all defaults are enabled
+            Write-Host "Starting full installation..." -ForegroundColor Green
+        }
+        '2' {
+            # Dry-Run Mode
+            $DryRun = $true
+            $env:DRYRUN_MODE = "true"
+        }
+        '3' {
+            # Custom Installation
+            $customOptions = Show-CustomMenu
+            if ($null -eq $customOptions) {
+                # User chose to go back, show menu again
+                $menuChoice = Show-Menu
+                # Process the new choice recursively
+                if ($menuChoice -eq 'Q' -or $menuChoice -eq 'q') {
+                    Write-ColorOutput "Setup cancelled by user." "Yellow"
+                    exit 0
+                }
+            }
+            else {
+                # Apply custom options
+                $SkipSoftware = -not $customOptions.Software
+                $SkipSystemConfig = -not $customOptions.SystemConfig
+                $SkipEnvironment = -not $customOptions.Environment
+                $SkipDrivers = -not $customOptions.Drivers
+                $SkipWSL = -not $customOptions.WSL
+                if ($customOptions.DryRun) {
+                    $DryRun = $true
+                    $env:DRYRUN_MODE = "true"
+                }
+            }
+        }
+        '4' {
+            # Quick Install
+            $SkipDrivers = $true
+            $SkipWSL = $true
+        }
+        { $_ -eq 'Q' -or $_ -eq 'q' } {
+            Write-ColorOutput "Setup cancelled by user." "Yellow"
+            exit 0
+        }
+        default {
+            Write-ColorOutput "Invalid choice. Starting full installation..." "Yellow"
+            Start-Sleep -Seconds 2
+        }
     }
 }
 

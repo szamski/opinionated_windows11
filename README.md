@@ -2,7 +2,23 @@
 
 Automated Windows 11 setup script for a fresh installation. One command to install all your essential software, configure system settings, and get your development environment ready.
 
-## 🚀 One-Line Installation
+## 🚀 Quick Start
+
+### Interactive Menu (Recommended)
+
+Simply run the script and choose from the interactive menu:
+
+```powershell
+.\setup.ps1
+```
+
+The menu offers:
+- **Full Installation** - Install everything
+- **Dry-Run Mode** - Preview changes without applying them
+- **Custom Installation** - Pick and choose components
+- **Quick Install** - Skip drivers and WSL for faster setup
+
+### One-Line Remote Installation
 
 Open PowerShell as Administrator and run:
 
@@ -142,6 +158,61 @@ If you prefer to clone the repository first:
    ```powershell
    .\setup.ps1
    ```
+   This will show the interactive menu where you can choose your installation mode.
+
+## 📋 Interactive Menu
+
+When you run `.\setup.ps1` without parameters, you'll see an interactive menu:
+
+```
+╔═══════════════════════════════════════════════════════════╗
+║                                                           ║
+║          Windows 11 Automated Setup Script               ║
+║          Opinionated & Optimized                         ║
+║                                                           ║
+╚═══════════════════════════════════════════════════════════╝
+
+Select Installation Mode:
+
+  1. Full Installation (Recommended)
+     Install everything: software, drivers, WSL, and configure system
+
+  2. Dry-Run Mode (Preview Only)
+     See what would be installed without making changes
+
+  3. Custom Installation
+     Choose which components to install
+
+  4. Quick Install (Skip Drivers & WSL)
+     Install software and configure system only
+
+  Q. Quit
+```
+
+### Custom Installation Menu
+
+Option 3 opens an interactive component selector:
+
+```
+═══════════════════════════════════════
+  Custom Installation Options
+═══════════════════════════════════════
+
+Select components to install:
+
+  1. [X] Software Installation
+  2. [X] System Configuration
+  3. [X] Environment Variables
+  4. [X] Hardware Drivers
+  5. [X] Windows Subsystem for Linux (WSL)
+
+  D. [ ] Dry-Run Mode (Preview Only)
+
+  S. Start Installation
+  B. Back to Main Menu
+```
+
+Toggle options by entering their number, then press **S** to start!
 
 ## 🔍 Dry-Run Mode (Preview Changes)
 
@@ -165,29 +236,36 @@ If you prefer to clone the repository first:
 - **Makes NO actual changes to your system**
 - **Does NOT require Administrator privileges**
 
-## 🎯 Selective Installation
+## 🎯 Command-Line Parameters (Advanced)
 
-You can skip certain parts of the setup:
+You can bypass the menu and use command-line parameters directly:
 
 ```powershell
-# Skip software installation
-.\setup.ps1 -SkipSoftware
+# Full installation without menu
+.\setup.ps1 -NoMenu
 
-# Skip system configuration
-.\setup.ps1 -SkipSystemConfig
+# Dry-run without menu
+.\setup.ps1 -DryRun -NoMenu
 
-# Skip environment variables setup
-.\setup.ps1 -SkipEnvironment
+# Skip specific components
+.\setup.ps1 -SkipSoftware -NoMenu
+.\setup.ps1 -SkipSystemConfig -NoMenu
+.\setup.ps1 -SkipEnvironment -NoMenu
+.\setup.ps1 -SkipDrivers -NoMenu
+.\setup.ps1 -SkipWSL -NoMenu
 
-# Skip hardware detection and driver installation
-.\setup.ps1 -SkipDrivers
-
-# Skip WSL installation
-.\setup.ps1 -SkipWSL
-
-# Combine multiple skips
-.\setup.ps1 -SkipWSL -SkipSystemConfig -SkipDrivers
+# Combine multiple parameters
+.\setup.ps1 -SkipWSL -SkipDrivers -DryRun -NoMenu
 ```
+
+**Parameters:**
+- `-NoMenu` - Skip interactive menu and run directly
+- `-DryRun` - Preview mode (no changes)
+- `-SkipSoftware` - Skip software installation
+- `-SkipSystemConfig` - Skip system configuration
+- `-SkipEnvironment` - Skip environment variables
+- `-SkipDrivers` - Skip hardware drivers
+- `-SkipWSL` - Skip WSL installation
 
 ## 📁 Project Structure
 
