@@ -1,0 +1,26 @@
+# Setup logs
+setup-log-*.txt
+
+# Windows thumbnail cache
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin
+$RECYCLE.BIN/
+
+# Windows shortcuts
+*.lnk
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates

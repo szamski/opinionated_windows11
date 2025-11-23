@@ -1,0 +1,126 @@
+{
+  "categories": {
+    "development": {
+      "description": "Core development tools",
+      "packages": [
+        {
+          "id": "Git.Git",
+          "name": "Git"
+        },
+        {
+          "id": "OpenJS.NodeJS",
+          "name": "Node.js"
+        },
+        {
+          "id": "Microsoft.VisualStudioCode",
+          "name": "Visual Studio Code"
+        },
+        {
+          "id": "Docker.DockerDesktop",
+          "name": "Docker Desktop"
+        },
+        {
+          "id": "Python.Python.3.13",
+          "name": "Python 3.13"
+        },
+        {
+          "id": "Gyan.FFmpeg",
+          "name": "FFmpeg"
+        },
+        {
+          "id": "cURL.cURL",
+          "name": "cURL"
+        }
+      ]
+    },
+    "terminal": {
+      "description": "Terminal and shell tools",
+      "packages": [
+        {
+          "id": "Microsoft.WindowsTerminal",
+          "name": "Windows Terminal"
+        },
+        {
+          "id": "Starship.Starship",
+          "name": "Starship prompt"
+        }
+      ]
+    },
+    "productivity": {
+      "description": "Productivity applications",
+      "packages": [
+        {
+          "id": "Anthropic.Claude",
+          "name": "Claude"
+        },
+        {
+          "id": "Obsidian.Obsidian",
+          "name": "Obsidian"
+        },
+        {
+          "id": "AgileBits.1Password",
+          "name": "1Password"
+        },
+        {
+          "id": "Google.Chrome",
+          "name": "Google Chrome"
+        }
+      ]
+    },
+    "communication": {
+      "description": "Communication tools",
+      "packages": [
+        {
+          "id": "Discord.Discord",
+          "name": "Discord"
+        },
+        {
+          "id": "SlackTechnologies.Slack",
+          "name": "Slack"
+        },
+        {
+          "id": "Zoom.Zoom.EXE",
+          "name": "Zoom"
+        },
+        {
+          "id": "ByteDance.Lark",
+          "name": "Lark"
+        }
+      ]
+    },
+    "creative": {
+      "description": "Creative and design tools",
+      "packages": [
+        {
+          "id": "Canva.Affinity",
+          "name": "Affinity"
+        },
+        {
+          "id": "Bambulab.BambuStudio",
+          "name": "Bambu Studio"
+        }
+      ]
+    },
+    "utilities": {
+      "description": "Utility applications",
+      "packages": [
+        {
+          "id": "LocalSend.LocalSend",
+          "name": "LocalSend"
+        },
+        {
+          "id": "Spotify.Spotify",
+          "name": "Spotify"
+        },
+        {
+          "id": "NordSecurity.NordVPN",
+          "name": "NordVPN"
+        },
+        {
+          "id": "FocusriteAudioEngineeringLtd.FocusriteControl2",
+          "name": "Focusrite Control 2"
+        }
+      ]
+    }
+  }
+}

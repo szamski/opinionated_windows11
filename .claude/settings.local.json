@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(winget list:*)",
+      "Bash(powershell -Command \"$env:PATH -split '';''\")",
+      "Bash(powershell -Command:*)",
+      "Bash(node --version:*)",
+      "Bash(git --version:*)",
+      "Bash(docker --version:*)",
+      "Bash(code:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
