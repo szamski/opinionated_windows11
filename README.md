@@ -23,10 +23,8 @@ The menu offers:
 Open PowerShell as Administrator and run:
 
 ```powershell
-irm https://raw.githubusercontent.com/YOUR-USERNAME/opinionated_windows11/main/setup.ps1 | iex
+irm https://raw.githubusercontent.com/szamski/opinionated_windows11/main/setup.ps1 | iex
 ```
-
-> **Note:** Replace `YOUR-USERNAME` with your GitHub username after uploading this repo.
 
 ## ✨ What This Does
 
@@ -150,7 +148,7 @@ If you prefer to clone the repository first:
 
 1. Clone this repository:
    ```powershell
-   git clone https://github.com/YOUR-USERNAME/opinionated_windows11.git
+   git clone https://github.com/szamski/opinionated_windows11.git
    cd opinionated_windows11
    ```
 
