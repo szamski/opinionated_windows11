@@ -7,17 +7,17 @@
 .DESCRIPTION
     Sets up custom environment variables and adds necessary paths to system and user PATH.
     Based on the current system configuration analysis.
+    Supports dry-run mode via DRYRUN_MODE environment variable.
 
 .EXAMPLE
     .\setup-env.ps1
 #>
 
-function Write-ColorOutput {
-    param(
-        [string]$Message,
-        [string]$Color = "White"
-    )
-    Write-Host $Message -ForegroundColor $Color
+# Import common helpers
+. "$PSScriptRoot\common-helpers.ps1"
+
+function Test-DryRun {
+    return ($env:DRYRUN_MODE -eq "true")
 }
 
 function Add-ToPath {
@@ -25,6 +25,11 @@ function Add-ToPath {
         [string]$PathToAdd,
         [string]$Scope = "User"  # "User" or "Machine"
     )
+
+    if (Test-DryRun) {
+        Write-DryRunAction "Add to $Scope PATH: $PathToAdd"
+        return $true
+    }
 
     try {
         # Get current PATH
@@ -57,6 +62,11 @@ function Set-CustomEnvironmentVariable {
         [string]$Value,
         [string]$Scope = "User"
     )
+
+    if (Test-DryRun) {
+        Write-DryRunAction "Set $Scope environment variable: $Name = $Value"
+        return $true
+    }
 
     try {
         $currentValue = [Environment]::GetEnvironmentVariable($Name, $Scope)

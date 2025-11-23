@@ -12,6 +12,7 @@
     - Chipset drivers
 
     Drivers are installed via winget where available, with fallback to Windows Update.
+    Supports dry-run mode via DRYRUN_MODE environment variable.
 
 .PARAMETER HardwareInfoPath
     Path to the hardware-info.json file created by detect-hardware.ps1
@@ -25,12 +26,11 @@ param(
     [string]$HardwareInfoPath = "$PSScriptRoot\..\hardware-info.json"
 )
 
-function Write-ColorOutput {
-    param(
-        [string]$Message,
-        [string]$Color = "White"
-    )
-    Write-Host $Message -ForegroundColor $Color
+# Import common helpers
+. "$PSScriptRoot\common-helpers.ps1"
+
+function Test-DryRun {
+    return ($env:DRYRUN_MODE -eq "true")
 }
 
 function Install-DriverPackage {
@@ -41,6 +41,11 @@ function Install-DriverPackage {
     )
 
     Write-ColorOutput "`nInstalling $PackageName driver for $DeviceType..." "Cyan"
+
+    if (Test-DryRun) {
+        Write-DryRunAction "Install driver: $PackageName ($PackageId) for $DeviceType"
+        return $true
+    }
 
     try {
         # Check if already installed

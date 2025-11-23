@@ -29,6 +29,9 @@
 .PARAMETER SkipWSL
     Skip WSL installation
 
+.PARAMETER DryRun
+    Run in dry-run mode - shows what would be done without making any changes
+
 .EXAMPLE
     .\setup.ps1
     Run full setup (recommended)
@@ -36,6 +39,10 @@
 .EXAMPLE
     .\setup.ps1 -SkipWSL
     Run setup but skip WSL installation
+
+.EXAMPLE
+    .\setup.ps1 -DryRun
+    Preview what the script would do without making any changes
 
 .NOTES
     Author: Generated with Claude Code
@@ -47,7 +54,8 @@ param(
     [switch]$SkipSystemConfig,
     [switch]$SkipEnvironment,
     [switch]$SkipDrivers,
-    [switch]$SkipWSL
+    [switch]$SkipWSL,
+    [switch]$DryRun
 )
 
 # ========================================
@@ -56,6 +64,11 @@ param(
 $ErrorActionPreference = "Continue"
 $ScriptRoot = $PSScriptRoot
 $LogFile = Join-Path $ScriptRoot "setup-log-$(Get-Date -Format 'yyyy-MM-dd-HHmmss').txt"
+
+# Set global dry-run flag for child scripts
+if ($DryRun) {
+    $env:DRYRUN_MODE = "true"
+}
 
 # ========================================
 # Helper Functions
@@ -137,15 +150,25 @@ Write-ColorOutput @"
 Write-ColorOutput "Starting setup at $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" "White"
 Write-ColorOutput "Log file: $LogFile" "Gray"
 
-# Check administrator privileges
-if (-not (Test-Administrator)) {
-    Write-ColorOutput "`nError: This script requires Administrator privileges!" "Red"
-    Write-ColorOutput "Please right-click and select 'Run as Administrator'" "Yellow"
-    Read-Host "Press Enter to exit"
-    exit 1
+# Check administrator privileges (skip in dry-run mode)
+if (-not $DryRun) {
+    if (-not (Test-Administrator)) {
+        Write-ColorOutput "`nError: This script requires Administrator privileges!" "Red"
+        Write-ColorOutput "Please right-click and select 'Run as Administrator'" "Yellow"
+        Read-Host "Press Enter to exit"
+        exit 1
+    }
+    Write-ColorOutput "✓ Running with Administrator privileges" "Green"
 }
-
-Write-ColorOutput "✓ Running with Administrator privileges" "Green"
+else {
+    Write-ColorOutput "⚠ DRY-RUN MODE - No changes will be made" "Yellow"
+    if (Test-Administrator) {
+        Write-ColorOutput "✓ Running with Administrator privileges (not required in dry-run)" "Gray"
+    }
+    else {
+        Write-ColorOutput "ℹ Not running as Administrator (OK for dry-run mode)" "Gray"
+    }
+}
 
 # Check PowerShell version
 $psVersion = $PSVersionTable.PSVersion
@@ -157,6 +180,9 @@ if ($psVersion.Major -lt 5) {
 
 # Display what will be executed
 Write-ColorOutput "`nSetup Configuration:" "White"
+if ($DryRun) {
+    Write-ColorOutput "  Mode: DRY-RUN (Preview Only)" "Cyan"
+}
 Write-ColorOutput "  Software Installation: $(if ($SkipSoftware) { 'SKIPPED' } else { 'ENABLED' })" $(if ($SkipSoftware) { "Yellow" } else { "Green" })
 Write-ColorOutput "  System Configuration: $(if ($SkipSystemConfig) { 'SKIPPED' } else { 'ENABLED' })" $(if ($SkipSystemConfig) { "Yellow" } else { "Green" })
 Write-ColorOutput "  Environment Variables: $(if ($SkipEnvironment) { 'SKIPPED' } else { 'ENABLED' })" $(if ($SkipEnvironment) { "Yellow" } else { "Green" })

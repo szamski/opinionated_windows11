@@ -7,6 +7,7 @@
 .DESCRIPTION
     Reads software.json configuration and installs all specified packages using Windows Package Manager (winget).
     Provides progress tracking and error handling for each installation.
+    Supports dry-run mode via DRYRUN_MODE environment variable.
 
 .PARAMETER ConfigPath
     Path to the software.json configuration file.
@@ -20,12 +21,11 @@ param(
     [string]$ConfigPath = "$PSScriptRoot\..\config\software.json"
 )
 
-function Write-ColorOutput {
-    param(
-        [string]$Message,
-        [string]$Color = "White"
-    )
-    Write-Host $Message -ForegroundColor $Color
+# Import common helpers
+. "$PSScriptRoot\common-helpers.ps1"
+
+function Test-DryRun {
+    return ($env:DRYRUN_MODE -eq "true")
 }
 
 function Test-WingetInstalled {
@@ -62,6 +62,11 @@ function Install-Package {
 
     Write-ColorOutput "`nInstalling $PackageName ($PackageId)..." "Cyan"
 
+    if (Test-DryRun) {
+        Write-DryRunAction "Install package: $PackageName ($PackageId) using winget"
+        return $true
+    }
+
     try {
         # Check if package is already installed
         $installed = winget list --id $PackageId --exact 2>$null
@@ -91,10 +96,16 @@ function Install-Package {
 # Main execution
 Write-ColorOutput "========================================" "Magenta"
 Write-ColorOutput "  Software Installation Script" "Magenta"
+if (Test-DryRun) {
+    Write-ColorOutput "  [DRY-RUN MODE]" "Cyan"
+}
 Write-ColorOutput "========================================" "Magenta"
 
 # Check if winget is installed
-if (-not (Test-WingetInstalled)) {
+if (Test-DryRun) {
+    Write-ColorOutput "`n[DRY-RUN] Skipping winget check" "Cyan"
+}
+elseif (-not (Test-WingetInstalled)) {
     Write-ColorOutput "`nWindows Package Manager (winget) is not installed." "Yellow"
     if (-not (Install-Winget)) {
         Write-ColorOutput "`nCannot continue without winget. Exiting..." "Red"
@@ -102,7 +113,12 @@ if (-not (Test-WingetInstalled)) {
     }
 }
 
-Write-ColorOutput "`nWinget is available. Proceeding with installations..." "Green"
+if (-not (Test-DryRun)) {
+    Write-ColorOutput "`nWinget is available. Proceeding with installations..." "Green"
+}
+else {
+    Write-ColorOutput "`n[DRY-RUN] Showing what would be installed..." "Cyan"
+}
 
 # Load configuration
 if (-not (Test-Path $ConfigPath)) {

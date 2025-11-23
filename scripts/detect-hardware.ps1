@@ -7,6 +7,7 @@
 .DESCRIPTION
     Scans the system to identify key hardware components including GPU, CPU, audio devices,
     network adapters, and other peripherals. Returns hardware information for driver installation.
+    Supports dry-run mode via DRYRUN_MODE environment variable.
 
 .EXAMPLE
     .\detect-hardware.ps1
@@ -15,12 +16,11 @@
     Returns a hashtable containing detected hardware information
 #>
 
-function Write-ColorOutput {
-    param(
-        [string]$Message,
-        [string]$Color = "White"
-    )
-    Write-Host $Message -ForegroundColor $Color
+# Import common helpers
+. "$PSScriptRoot\common-helpers.ps1"
+
+function Test-DryRun {
+    return ($env:DRYRUN_MODE -eq "true")
 }
 
 function Get-GPUInfo {

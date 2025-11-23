@@ -143,6 +143,28 @@ If you prefer to clone the repository first:
    .\setup.ps1
    ```
 
+## 🔍 Dry-Run Mode (Preview Changes)
+
+**Test before you commit!** Use dry-run mode to see what the script would do without making any actual changes:
+
+```powershell
+# Preview everything that would be installed/configured
+.\setup.ps1 -DryRun
+
+# Preview with selective installation
+.\setup.ps1 -DryRun -SkipWSL
+
+# Perfect for testing on VMs or before running on your main system
+```
+
+**Dry-run mode:**
+- Shows all packages that would be installed
+- Lists all registry changes that would be made
+- Displays environment variables that would be set
+- Shows drivers that would be installed
+- **Makes NO actual changes to your system**
+- **Does NOT require Administrator privileges**
+
 ## 🎯 Selective Installation
 
 You can skip certain parts of the setup:
@@ -175,6 +197,7 @@ opinionated_windows11/
 ├── config/
 │   └── software.json           # Software packages configuration
 ├── scripts/
+│   ├── common-helpers.ps1      # Shared helper functions
 │   ├── install-software.ps1    # Winget software installer
 │   ├── configure-system.ps1    # Windows settings configurator
 │   ├── setup-env.ps1           # Environment variables setup

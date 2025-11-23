@@ -7,17 +7,17 @@
 .DESCRIPTION
     Modifies Windows registry settings to customize Explorer, taskbar, theme, and privacy settings.
     All settings are based on the current system configuration analysis.
+    Supports dry-run mode via DRYRUN_MODE environment variable.
 
 .EXAMPLE
     .\configure-system.ps1
 #>
 
-function Write-ColorOutput {
-    param(
-        [string]$Message,
-        [string]$Color = "White"
-    )
-    Write-Host $Message -ForegroundColor $Color
+# Import common helpers
+. "$PSScriptRoot\common-helpers.ps1"
+
+function Test-DryRun {
+    return ($env:DRYRUN_MODE -eq "true")
 }
 
 function Set-RegistryValue {
@@ -28,6 +28,11 @@ function Set-RegistryValue {
         [string]$Type = "DWord",
         [string]$Description
     )
+
+    if (Test-DryRun) {
+        Write-DryRunAction "Set registry: $Path\$Name = $Value ($Type) - $Description"
+        return $true
+    }
 
     try {
         # Create registry path if it doesn't exist
@@ -201,15 +206,20 @@ if (Set-RegistryValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Exp
 # Restart Explorer
 # ========================================
 Write-ColorOutput "`n[Applying Changes]" "Cyan"
-try {
-    Write-ColorOutput "  Restarting Windows Explorer to apply changes..." "Yellow"
-    Stop-Process -Name explorer -Force -ErrorAction Stop
-    Start-Sleep -Seconds 2
-    Write-ColorOutput "  ✓ Explorer restarted successfully" "Green"
+if (Test-DryRun) {
+    Write-DryRunAction "Restart Windows Explorer to apply changes"
 }
-catch {
-    Write-ColorOutput "  ✗ Failed to restart Explorer: $_" "Red"
-    Write-ColorOutput "  Please restart Explorer manually or log off/on for changes to take effect" "Yellow"
+else {
+    try {
+        Write-ColorOutput "  Restarting Windows Explorer to apply changes..." "Yellow"
+        Stop-Process -Name explorer -Force -ErrorAction Stop
+        Start-Sleep -Seconds 2
+        Write-ColorOutput "  ✓ Explorer restarted successfully" "Green"
+    }
+    catch {
+        Write-ColorOutput "  ✗ Failed to restart Explorer: $_" "Red"
+        Write-ColorOutput "  Please restart Explorer manually or log off/on for changes to take effect" "Yellow"
+    }
 }
 
 # ========================================

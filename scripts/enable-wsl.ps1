@@ -7,17 +7,17 @@
 .DESCRIPTION
     Enables WSL 2, Virtual Machine Platform, and installs Ubuntu as the default Linux distribution.
     Checks if WSL is already enabled before making changes.
+    Supports dry-run mode via DRYRUN_MODE environment variable.
 
 .EXAMPLE
     .\enable-wsl.ps1
 #>
 
-function Write-ColorOutput {
-    param(
-        [string]$Message,
-        [string]$Color = "White"
-    )
-    Write-Host $Message -ForegroundColor $Color
+# Import common helpers
+. "$PSScriptRoot\common-helpers.ps1"
+
+function Test-DryRun {
+    return ($env:DRYRUN_MODE -eq "true")
 }
 
 function Test-WSLEnabled {
@@ -43,6 +43,11 @@ function Test-VirtualMachinePlatformEnabled {
 function Enable-WSLFeature {
     Write-ColorOutput "`nEnabling Windows Subsystem for Linux..." "Cyan"
 
+    if (Test-DryRun) {
+        Write-DryRunAction "Enable Windows feature: Microsoft-Windows-Subsystem-Linux"
+        return $true
+    }
+
     try {
         $result = Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -NoRestart -ErrorAction Stop
 
@@ -63,6 +68,11 @@ function Enable-WSLFeature {
 
 function Enable-VirtualMachinePlatformFeature {
     Write-ColorOutput "`nEnabling Virtual Machine Platform..." "Cyan"
+
+    if (Test-DryRun) {
+        Write-DryRunAction "Enable Windows feature: VirtualMachinePlatform"
+        return $true
+    }
 
     try {
         $result = Enable-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform -NoRestart -ErrorAction Stop
