@@ -1,4 +1,4 @@
-#Requires -RunAsAdministrator
+﻿# Note: This script should be run as Administrator for full functionality
 
 <#
 .SYNOPSIS
@@ -42,11 +42,11 @@ function Set-RegistryValue {
 
         # Set the registry value
         Set-ItemProperty -Path $Path -Name $Name -Value $Value -Type $Type -ErrorAction Stop
-        Write-ColorOutput "  ✓ $Description" "Green"
+        Write-ColorOutput "  âś“ $Description" "Green"
         return $true
     }
     catch {
-        Write-ColorOutput "  ✗ Failed to set $Description : $_" "Red"
+        Write-ColorOutput "  âś— Failed to set $Description : $_" "Red"
         return $false
     }
 }
@@ -214,10 +214,10 @@ else {
         Write-ColorOutput "  Restarting Windows Explorer to apply changes..." "Yellow"
         Stop-Process -Name explorer -Force -ErrorAction Stop
         Start-Sleep -Seconds 2
-        Write-ColorOutput "  ✓ Explorer restarted successfully" "Green"
+        Write-ColorOutput "  âś“ Explorer restarted successfully" "Green"
     }
     catch {
-        Write-ColorOutput "  ✗ Failed to restart Explorer: $_" "Red"
+        Write-ColorOutput "  âś— Failed to restart Explorer: $_" "Red"
         Write-ColorOutput "  Please restart Explorer manually or log off/on for changes to take effect" "Yellow"
     }
 }

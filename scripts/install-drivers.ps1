@@ -1,4 +1,4 @@
-#Requires -RunAsAdministrator
+﻿# Note: This script should be run as Administrator for full functionality
 
 <#
 .SYNOPSIS
@@ -51,7 +51,7 @@ function Install-DriverPackage {
         # Check if already installed
         $installed = winget list --id $PackageId --exact 2>$null
         if ($LASTEXITCODE -eq 0 -and $installed -match $PackageId) {
-            Write-ColorOutput "  ✓ $PackageName driver is already installed" "Gray"
+            Write-ColorOutput "  âś“ $PackageName driver is already installed" "Gray"
             return $true
         }
 
@@ -59,16 +59,16 @@ function Install-DriverPackage {
         winget install --id $PackageId --exact --silent --accept-source-agreements --accept-package-agreements
 
         if ($LASTEXITCODE -eq 0) {
-            Write-ColorOutput "  ✓ $PackageName driver installed successfully" "Green"
+            Write-ColorOutput "  âś“ $PackageName driver installed successfully" "Green"
             return $true
         }
         else {
-            Write-ColorOutput "  ✗ Failed to install $PackageName driver (exit code: $LASTEXITCODE)" "Yellow"
+            Write-ColorOutput "  âś— Failed to install $PackageName driver (exit code: $LASTEXITCODE)" "Yellow"
             return $false
         }
     }
     catch {
-        Write-ColorOutput "  ✗ Error installing $PackageName driver: $_" "Red"
+        Write-ColorOutput "  âś— Error installing $PackageName driver: $_" "Red"
         return $false
     }
 }
@@ -101,7 +101,7 @@ function Install-GPUDrivers {
             }
             "Intel" {
                 Write-ColorOutput "`n  Detected Intel GPU: $($gpu.Name)" "White"
-                Write-ColorOutput "  ℹ Intel graphics drivers are usually installed via Windows Update" "Gray"
+                Write-ColorOutput "  â„ą Intel graphics drivers are usually installed via Windows Update" "Gray"
                 Write-ColorOutput "  You can manually download from: https://www.intel.com/content/www/us/en/download-center/home.html" "Gray"
             }
             default {
@@ -138,16 +138,16 @@ function Install-AudioDrivers {
             "Focusrite" {
                 Write-ColorOutput "`n  Detected Focusrite Audio: $($device.Name)" "White"
                 # Focusrite drivers need to be downloaded manually
-                Write-ColorOutput "  ℹ Focusrite drivers should be downloaded from:" "Gray"
+                Write-ColorOutput "  â„ą Focusrite drivers should be downloaded from:" "Gray"
                 Write-ColorOutput "    https://focusrite.com/downloads" "Cyan"
             }
             "Realtek" {
                 Write-ColorOutput "`n  Detected Realtek Audio: $($device.Name)" "White"
-                Write-ColorOutput "  ℹ Realtek audio drivers are usually included with Windows Update" "Gray"
+                Write-ColorOutput "  â„ą Realtek audio drivers are usually included with Windows Update" "Gray"
             }
             default {
                 Write-ColorOutput "`n  Detected: $($device.Name) [$($device.Vendor)]" "White"
-                Write-ColorOutput "  ℹ Audio drivers are typically installed automatically via Windows Update" "Gray"
+                Write-ColorOutput "  â„ą Audio drivers are typically installed automatically via Windows Update" "Gray"
             }
         }
     }
@@ -177,17 +177,17 @@ function Install-NetworkDrivers {
         Write-ColorOutput "`n  Detected: $($adapter.Name) [$($adapter.Type)]" "White"
 
         if ($adapter.Vendor -eq "Intel" -and $adapter.Type -eq "WiFi") {
-            Write-ColorOutput "  ℹ Intel WiFi drivers are available via Windows Update" "Gray"
+            Write-ColorOutput "  â„ą Intel WiFi drivers are available via Windows Update" "Gray"
             Write-ColorOutput "    For latest drivers: https://www.intel.com/content/www/us/en/download-center/home.html" "Gray"
         }
         elseif ($adapter.Vendor -eq "Intel" -and $adapter.Type -eq "Ethernet") {
-            Write-ColorOutput "  ℹ Intel Ethernet drivers are available via Windows Update" "Gray"
+            Write-ColorOutput "  â„ą Intel Ethernet drivers are available via Windows Update" "Gray"
         }
         elseif ($adapter.Vendor -eq "Realtek") {
-            Write-ColorOutput "  ℹ Realtek drivers are usually included with Windows Update" "Gray"
+            Write-ColorOutput "  â„ą Realtek drivers are usually included with Windows Update" "Gray"
         }
         else {
-            Write-ColorOutput "  ℹ Network drivers are typically installed automatically via Windows Update" "Gray"
+            Write-ColorOutput "  â„ą Network drivers are typically installed automatically via Windows Update" "Gray"
         }
     }
 }
@@ -206,13 +206,13 @@ function Install-ChipsetDrivers {
 
     switch ($CPUInfo.Vendor) {
         "Intel" {
-            Write-ColorOutput "  ℹ Intel chipset drivers available at:" "Gray"
+            Write-ColorOutput "  â„ą Intel chipset drivers available at:" "Gray"
             Write-ColorOutput "    https://www.intel.com/content/www/us/en/download-center/home.html" "Cyan"
             Write-ColorOutput "  Or install Intel Driver & Support Assistant via winget:" "Gray"
             Install-DriverPackage -PackageId "Intel.IntelDriverAndSupportAssistant" -PackageName "Intel DSA" -DeviceType "Intel System"
         }
         "AMD" {
-            Write-ColorOutput "  ℹ AMD chipset drivers available at:" "Gray"
+            Write-ColorOutput "  â„ą AMD chipset drivers available at:" "Gray"
             Write-ColorOutput "    https://www.amd.com/en/support" "Cyan"
         }
         default {
@@ -225,7 +225,7 @@ function Install-ChipsetDrivers {
         Write-ColorOutput "`n  Detected Lenovo system" "White"
         Write-ColorOutput "  Installing Lenovo System Update..." "Cyan"
         if (Install-DriverPackage -PackageId "Lenovo.SystemUpdate" -PackageName "Lenovo System Update" -DeviceType "Lenovo System") {
-            Write-ColorOutput "  ℹ Use Lenovo System Update to install manufacturer-specific drivers" "Gray"
+            Write-ColorOutput "  â„ą Use Lenovo System Update to install manufacturer-specific drivers" "Gray"
         }
     }
     # Dell-specific drivers
@@ -237,7 +237,7 @@ function Install-ChipsetDrivers {
     # HP-specific drivers
     elseif ($SystemInfo.Manufacturer -match "HP|Hewlett") {
         Write-ColorOutput "`n  Detected HP system" "White"
-        Write-ColorOutput "  ℹ HP Support Assistant may be pre-installed" "Gray"
+        Write-ColorOutput "  â„ą HP Support Assistant may be pre-installed" "Gray"
         Write-ColorOutput "  Download from: https://support.hp.com/us-en/help/hp-support-assistant" "Cyan"
     }
 }
@@ -245,7 +245,7 @@ function Install-ChipsetDrivers {
 function Invoke-WindowsUpdate {
     Write-ColorOutput "`n[Triggering Windows Update for Drivers]" "Cyan"
 
-    Write-ColorOutput "  ℹ Running Windows Update to install missing drivers..." "Gray"
+    Write-ColorOutput "  â„ą Running Windows Update to install missing drivers..." "Gray"
 
     try {
         # Install PSWindowsUpdate module if not present
@@ -258,15 +258,15 @@ function Invoke-WindowsUpdate {
             Import-Module PSWindowsUpdate
             Write-ColorOutput "  Starting Windows Update scan for drivers..." "Cyan"
             Get-WindowsUpdate -MicrosoftUpdate -Install -UpdateType Driver -AcceptAll -AutoReboot:$false -Verbose
-            Write-ColorOutput "  ✓ Windows Update driver scan complete" "Green"
+            Write-ColorOutput "  âś“ Windows Update driver scan complete" "Green"
         }
         else {
-            Write-ColorOutput "  ⚠ PSWindowsUpdate module not available" "Yellow"
+            Write-ColorOutput "  âš  PSWindowsUpdate module not available" "Yellow"
             Write-ColorOutput "  Please run Windows Update manually from Settings > Windows Update" "Yellow"
         }
     }
     catch {
-        Write-ColorOutput "  ⚠ Could not run Windows Update automatically: $_" "Yellow"
+        Write-ColorOutput "  âš  Could not run Windows Update automatically: $_" "Yellow"
         Write-ColorOutput "  Please run Windows Update manually from Settings > Windows Update" "Yellow"
     }
 }
@@ -286,7 +286,7 @@ if (-not (Test-Path $HardwareInfoPath)) {
 # Load hardware information
 try {
     $hardwareInfo = Get-Content $HardwareInfoPath -Raw | ConvertFrom-Json
-    Write-ColorOutput "✓ Hardware information loaded successfully" "Green"
+    Write-ColorOutput "âś“ Hardware information loaded successfully" "Green"
 }
 catch {
     Write-ColorOutput "Failed to load hardware information: $_" "Red"
@@ -307,7 +307,7 @@ Write-ColorOutput "`n========================================" "Magenta"
 Write-ColorOutput "  Driver Installation Summary" "Magenta"
 Write-ColorOutput "========================================" "Magenta"
 Write-ColorOutput "`nDriver installation process complete!" "Green"
-Write-ColorOutput "`nℹ Important Notes:" "Yellow"
+Write-ColorOutput "`nâ„ą Important Notes:" "Yellow"
 Write-ColorOutput "  1. Some drivers may require a system restart to take effect" "White"
 Write-ColorOutput "  2. Run Windows Update manually to ensure all drivers are current" "White"
 Write-ColorOutput "  3. For manufacturer-specific drivers (Lenovo, Dell, HP), use their update tools" "White"

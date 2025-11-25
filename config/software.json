@@ -30,6 +30,14 @@
         {
           "id": "cURL.cURL",
           "name": "cURL"
+        },
+        {
+          "id": "Neovim.Neovim",
+          "name": "Neovim"
+        },
+        {
+          "id": "Microsoft.PowerShell",
+          "name": "PowerShell 7"
         }
       ]
     },
@@ -64,6 +72,10 @@
         {
           "id": "Google.Chrome",
           "name": "Google Chrome"
+        },
+        {
+          "id": "Notion.NotionCalendar",
+          "name": "Notion Calendar"
         }
       ]
     },
@@ -98,6 +110,10 @@
         {
           "id": "Bambulab.BambuStudio",
           "name": "Bambu Studio"
+        },
+        {
+          "id": "OBSProject.OBSStudio",
+          "name": "OBS Studio"
         }
       ]
     },
@@ -119,6 +135,18 @@
         {
           "id": "FocusriteAudioEngineeringLtd.FocusriteControl2",
           "name": "Focusrite Control 2"
+        },
+        {
+          "id": "Microsoft.PowerToys",
+          "name": "PowerToys"
+        },
+        {
+          "id": "Fastfetch-cli.Fastfetch",
+          "name": "fastfetch"
+        },
+        {
+          "id": "junegunn.fzf",
+          "name": "fzf"
         }
       ]
     },
@@ -128,6 +156,10 @@
         {
           "id": "Valve.Steam",
           "name": "Steam"
+        },
+        {
+          "id": "SteelSeries.GG",
+          "name": "SteelSeries GG"
         }
       ]
     }

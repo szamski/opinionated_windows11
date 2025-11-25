@@ -1,383 +1,180 @@
 # Opinionated Windows 11 Setup
 
-Automated Windows 11 setup script for a fresh installation. One command to install all your essential software, configure system settings, and get your development environment ready.
+![Fastfetch Screenshot](assets/fastfetch.png)
+
+Who said Windows 11 can't have dotfiles? Who said you can't have a proper terminal with fuzzy finder, starship, fastfetch, ffmpeg, and all the good stuff?
+
+Nobody. That's who.
+
+## Why This Exists
+
+This script is for people like me—people stuck on Windows for reasons beyond their control. Maybe it's your company's MS Office infrastructure. Maybe it's security policies. Maybe it's just... work.
+
+But you still want a properly configured system. You want to code in Node.js or Python without friction. You want those Linux niceties: beautiful terminal prompts, `fzf`, `neovim` with LazyVim, and all that good stuff.
+
+I got tired of the Windows setup dance—clicking through installers, downloading files one by one, configuring settings manually. It's absurdly tedious compared to Linux. So I made this: **one command to get everything set up**.
+
+**Important:** You won't find window manager wannabes like GlazeWM here trying to be "almost as good as Hyprland." Let's not kid ourselves—this is still Windows, with all its quirks. But it's Windows with way more advantages than a typical installation.
 
 ## 🚀 Quick Start
 
-### Interactive Menu (Recommended)
+### One Command, That's It
 
-Simply run the script and choose from the interactive menu:
-
-```powershell
-.\setup.ps1
-```
-
-The menu offers:
-- **Full Installation** - Install everything
-- **Dry-Run Mode** - Preview changes without applying them
-- **Custom Installation** - Pick and choose components
-- **Quick Install** - Skip drivers and WSL for faster setup
-
-### One-Line Remote Installation
-
-Open PowerShell as Administrator and run:
+Open PowerShell as Administrator:
 
 ```powershell
 irm https://raw.githubusercontent.com/szamski/opinionated_windows11/main/setup.ps1 | iex
 ```
 
-**What happens:**
-1. The script detects it's running remotely
-2. Automatically clones the repository to `%USERPROFILE%\opinionated_windows11`
-3. Restarts from the local copy with the interactive menu
+The script will:
+1. Clone itself to your machine
+2. Show you an interactive menu
+3. Let you choose what to install
+4. Get out of your way
 
-**Note:** Git must be installed for the one-liner to work. If Git is not available, the script will provide manual installation instructions.
+**Note:** You need Git installed. If you don't have it, the script will tell you what to do.
 
-## ✨ What This Does
-
-This automated setup script configures a fresh Windows 11 installation with:
-
-### 📦 Software Installation (via winget)
-
-**Development Tools:**
-- Git
-- Node.js
-- Visual Studio Code
-- Docker Desktop
-- Python 3.13
-- FFmpeg
-- cURL
-
-**Terminal & Shell:**
-- Windows Terminal
-- Starship (beautiful shell prompt)
-
-**Productivity:**
-- Claude (AI assistant)
-- Obsidian (note-taking)
-- 1Password (password manager)
-- Google Chrome
-
-**Communication:**
-- Discord
-- Slack
-- Zoom
-- Lark
-
-**Creative Tools:**
-- Affinity (design suite)
-- Bambu Studio (3D printing)
-
-**Utilities:**
-- LocalSend (file sharing)
-- Spotify
-- NordVPN
-- Focusrite Control 2
-
-**Gaming:**
-- Steam
-
-### ⚙️ System Configuration
-
-**Windows Explorer:**
-- Show hidden files and folders
-- Show file extensions
-- Open to "This PC" instead of Quick Access
-
-**Theme:**
-- Dark mode for apps
-- Dark mode for system
-
-**Taskbar:**
-- Hide search box
-- Hide Task View button
-- Disable animations
-- Disable desktop preview on hover
-
-**Privacy & Performance:**
-- Disable recent documents tracking
-- Disable Start Menu recommendations
-- Disable window animations
-- Optimize visual effects for performance
-
-### 🔧 Environment Variables
-
-**Custom Variables:**
-- `Claude_Code` → `%USERPROFILE%\.local\bin`
-- `NODE_HOME` → `C:\Program Files\nodejs`
-
-**PATH Additions:**
-- Claude Code CLI
-- npm global packages
-- VS Code CLI
-- Python & Scripts
-- Git
-- Starship
-- Node.js
-- Docker
-
-### 🖥️ Hardware Detection & Driver Installation
-
-**Automatic Hardware Detection:**
-- Graphics cards (NVIDIA, AMD, Intel)
-- Processors (Intel, AMD)
-- Audio devices (Realtek, Focusrite, etc.)
-- Network adapters (WiFi, Ethernet, Bluetooth)
-- Storage devices
-- System manufacturer information
-
-**Smart Driver Installation:**
-- NVIDIA GeForce Experience (for NVIDIA GPUs)
-- AMD Adrenalin Edition (for AMD GPUs)
-- Intel Driver & Support Assistant (for Intel systems)
-- Manufacturer-specific tools:
-  - Lenovo System Update
-  - Dell Command Update
-  - HP Support Assistant
-- Windows Update integration for remaining drivers
-
-### 🐧 WSL (Windows Subsystem for Linux)
-
-- Enables WSL 2
-- Enables Virtual Machine Platform
-- Installs Ubuntu as default distribution
-
-## 📋 Requirements
-
-- Windows 11 (fresh installation recommended)
-- PowerShell 5.1 or higher
-- Administrator privileges
-- Internet connection
-
-## 🛠️ Manual Installation
-
-If you prefer to clone the repository first:
-
-1. Clone this repository:
-   ```powershell
-   git clone https://github.com/szamski/opinionated_windows11.git
-   cd opinionated_windows11
-   ```
-
-2. Run the setup script as Administrator:
-   ```powershell
-   .\setup.ps1
-   ```
-   This will show the interactive menu where you can choose your installation mode.
-
-## 📋 Interactive Menu
-
-When you run `.\setup.ps1` without parameters, you'll see an interactive menu:
-
-```
-╔═══════════════════════════════════════════════════════════╗
-║                                                           ║
-║          Windows 11 Automated Setup Script               ║
-║          Opinionated & Optimized                         ║
-║                                                           ║
-╚═══════════════════════════════════════════════════════════╝
-
-Select Installation Mode:
-
-  1. Full Installation (Recommended)
-     Install everything: software, drivers, WSL, and configure system
-
-  2. Dry-Run Mode (Preview Only)
-     See what would be installed without making changes
-
-  3. Custom Installation
-     Choose which components to install
-
-  4. Quick Install (Skip Drivers & WSL)
-     Install software and configure system only
-
-  Q. Quit
-```
-
-### Custom Installation Menu
-
-Option 3 opens an interactive component selector:
-
-```
-═══════════════════════════════════════
-  Custom Installation Options
-═══════════════════════════════════════
-
-Select components to install:
-
-  1. [X] Software Installation
-  2. [X] System Configuration
-  3. [X] Environment Variables
-  4. [X] Hardware Drivers
-  5. [X] Windows Subsystem for Linux (WSL)
-
-  D. [ ] Dry-Run Mode (Preview Only)
-
-  S. Start Installation
-  B. Back to Main Menu
-```
-
-Toggle options by entering their number, then press **S** to start!
-
-## 🔍 Dry-Run Mode (Preview Changes)
-
-**Test before you commit!** Use dry-run mode to see what the script would do without making any actual changes:
+### Or Clone First (If You're That Type)
 
 ```powershell
-# Preview everything that would be installed/configured
+git clone https://github.com/szamski/opinionated_windows11.git
+cd opinionated_windows11
+.\setup.ps1
+```
+
+## What You Get
+
+### Development Environment
+- **Git, Node.js, Python 3.13** - the usual suspects
+- **VS Code** - because you're probably using it anyway
+- **Docker Desktop** - containers on Windows, surprisingly decent
+- **WSL 2 with Ubuntu** - a real Linux terminal when you need it
+- **FFmpeg, cURL** - the tools you actually use
+
+### Terminal That Doesn't Suck
+- **Windows Terminal** - finally
+- **Starship** - beautiful, fast shell prompt
+- **fzf** - fuzzy finder (install separately in WSL, works like a charm)
+- **neovim** - (you can add LazyVim yourself, I'm not that opinionated)
+
+### Apps I Actually Use
+- **Claude** - AI that helps you code
+- **Obsidian** - notes that make sense
+- **1Password** - because password123 isn't cutting it
+- **Chrome** - yeah, yeah, I know
+- **Discord, Slack, Zoom, Lark** - work and play
+- **Spotify** - for the coding soundtrack
+- **Steam** - because work-life balance
+
+### Creative Stuff
+- **Affinity Suite** - Photoshop but you actually own it
+- **Bambu Studio** - if you're into 3D printing
+
+### System Tweaks That Should Be Default
+- Show file extensions (how is this not default?)
+- Show hidden files (same question)
+- Dark mode everything
+- Kill the animations (performance > pretty)
+- Hide the taskbar junk you never use
+- Disable tracking nonsense
+
+### Smart Driver Detection
+The script actually looks at your hardware and installs the right stuff:
+- NVIDIA/AMD/Intel graphics drivers
+- Manufacturer tools (Lenovo, Dell, HP)
+- Audio drivers
+- Network adapters
+- Everything else through Windows Update
+
+## 🎯 Usage Modes
+
+### Interactive Menu (Default)
+Just run `.\setup.ps1` and pick what you want:
+- **Full Install** - everything
+- **Dry-Run** - see what would happen
+- **Custom** - pick and choose
+- **Quick** - skip drivers and WSL
+
+### Command Line (For Scripts)
+```powershell
+# Preview without changing anything
 .\setup.ps1 -DryRun
 
-# Preview with selective installation
-.\setup.ps1 -DryRun -SkipWSL
+# Skip stuff you don't need
+.\setup.ps1 -SkipWSL -SkipDrivers
 
-# Perfect for testing on VMs or before running on your main system
-```
+# Just install software, no system tweaks
+.\setup.ps1 -SkipSystemConfig
 
-**Dry-run mode:**
-- Shows all packages that would be installed
-- Lists all registry changes that would be made
-- Displays environment variables that would be set
-- Shows drivers that would be installed
-- **Makes NO actual changes to your system**
-- **Does NOT require Administrator privileges**
-
-## 🎯 Command-Line Parameters (Advanced)
-
-You can bypass the menu and use command-line parameters directly:
-
-```powershell
-# Full installation without menu
+# Go full auto
 .\setup.ps1 -NoMenu
-
-# Dry-run without menu
-.\setup.ps1 -DryRun -NoMenu
-
-# Skip specific components
-.\setup.ps1 -SkipSoftware -NoMenu
-.\setup.ps1 -SkipSystemConfig -NoMenu
-.\setup.ps1 -SkipEnvironment -NoMenu
-.\setup.ps1 -SkipDrivers -NoMenu
-.\setup.ps1 -SkipWSL -NoMenu
-
-# Combine multiple parameters
-.\setup.ps1 -SkipWSL -SkipDrivers -DryRun -NoMenu
 ```
 
-**Parameters:**
-- `-NoMenu` - Skip interactive menu and run directly
-- `-DryRun` - Preview mode (no changes)
-- `-SkipSoftware` - Skip software installation
-- `-SkipSystemConfig` - Skip system configuration
-- `-SkipEnvironment` - Skip environment variables
-- `-SkipDrivers` - Skip hardware drivers
-- `-SkipWSL` - Skip WSL installation
+## After Installation
 
-## 📁 Project Structure
-
-```
-opinionated_windows11/
-├── setup.ps1                    # Main orchestration script
-├── config/
-│   └── software.json           # Software packages configuration
-├── scripts/
-│   ├── common-helpers.ps1      # Shared helper functions
-│   ├── install-software.ps1    # Winget software installer
-│   ├── configure-system.ps1    # Windows settings configurator
-│   ├── setup-env.ps1           # Environment variables setup
-│   ├── detect-hardware.ps1     # Hardware detection module
-│   ├── install-drivers.ps1     # Driver installation module
-│   └── enable-wsl.ps1          # WSL installer
-└── README.md                    # This file
-```
-
-## 🔄 Post-Installation Steps
-
-After running the setup script:
-
-1. **Restart your computer** to apply all changes
-
-2. **Launch Ubuntu** from Start Menu to complete WSL setup
-   - Create your Linux username and password
-
-3. **Configure Starship prompt** (optional):
-   Add to your PowerShell profile:
+1. **Restart** - yeah, it's Windows
+2. **Open Ubuntu** from Start - set up your Linux username
+3. **Configure Starship** in PowerShell (add to `$PROFILE`):
    ```powershell
-   notepad $PROFILE
-   # Add this line:
    Invoke-Expression (&starship init powershell)
    ```
-
-4. **Sign into your applications:**
-   - 1Password
-   - Google Chrome (sync your settings)
-   - Discord, Slack, Zoom
-
-5. **Configure Git:**
+4. **Set up Git**:
    ```bash
    git config --global user.name "Your Name"
-   git config --global user.email "your.email@example.com"
+   git config --global user.email "your@email.com"
    ```
+5. **Sign into stuff** - 1Password, Chrome, etc.
 
-## 🎨 Customization
+## Customization
 
-### Adding More Software
+Want different software? Edit `config/software.json`.
 
-Edit `config/software.json` to add or remove software packages. Find package IDs using:
-
+Find package IDs:
 ```powershell
-winget search "package name"
+winget search "whatever you want"
 ```
 
-### Modifying System Settings
+System settings not to your taste? Edit `scripts/configure-system.ps1`.
 
-Edit `scripts/configure-system.ps1` to customize Windows registry settings.
+This is your machine. Make it yours.
 
-### Changing Environment Variables
+## Troubleshooting
 
-Edit `scripts/setup-env.ps1` to add or modify environment variables.
+**Winget not found?**  
+Install "App Installer" from Microsoft Store. Restart PowerShell.
 
-## 📝 Logs
+**Permission denied?**  
+Run PowerShell as Administrator. Right-click, "Run as Administrator."
 
-The setup script creates a log file with timestamp in the root directory:
-```
-setup-log-2024-01-15-143022.txt
-```
-
-Review this file if you encounter any issues.
-
-## ⚠️ Troubleshooting
-
-### Winget Not Found
-If winget is not installed, the script will attempt to install it automatically. If this fails:
-1. Install "App Installer" from Microsoft Store
-2. Restart PowerShell and try again
-
-### Permission Errors
-Make sure you're running PowerShell as Administrator:
-1. Right-click PowerShell
-2. Select "Run as Administrator"
-
-### WSL Installation Requires Restart
-Some Windows features require a restart. The script will notify you if this is needed.
-
-### Script Execution Policy
-If you get an execution policy error:
+**Execution policy blocking?**  
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
-## 🤝 Contributing
+**WSL needs restart?**  
+Some Windows features require it. Just restart.
 
-This is a personal setup script, but feel free to fork it and customize it for your own needs!
+## Project Structure
 
-## 📄 License
+```
+opinionated_windows11/
+├── setup.ps1                    # The main script
+├── config/
+│   └── software.json           # What gets installed
+├── scripts/
+│   ├── install-software.ps1    # Winget automation
+│   ├── configure-system.ps1    # Registry tweaks
+│   ├── setup-env.ps1           # PATH and environment
+│   ├── detect-hardware.ps1     # Hardware detection
+│   ├── install-drivers.ps1     # Driver installation
+│   └── enable-wsl.ps1          # WSL setup
+└── README.md
+```
 
-This project is provided as-is for personal use. Feel free to modify and share.
+## Contributing
 
-## 🙏 Credits
-
-Generated with [Claude Code](https://claude.com/claude-code) - AI-powered coding assistant.
+This is my personal setup, but if you want to fork it and make it yours—go for it. That's the point.
 
 ---
 
-**Happy Windows 11 Setup!** 🎉
+**Now go make Windows actually usable.** 🚀

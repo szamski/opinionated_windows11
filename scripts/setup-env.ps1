@@ -1,4 +1,4 @@
-#Requires -RunAsAdministrator
+﻿# Note: This script should be run as Administrator for full functionality
 
 <#
 .SYNOPSIS
@@ -39,7 +39,7 @@ function Add-ToPath {
         $pathArray = $currentPath -split ';' | Where-Object { $_ -ne '' }
 
         if ($pathArray -contains $PathToAdd) {
-            Write-ColorOutput "  ○ $PathToAdd already in $Scope PATH" "Gray"
+            Write-ColorOutput "  â—‹ $PathToAdd already in $Scope PATH" "Gray"
             return $true
         }
 
@@ -47,11 +47,11 @@ function Add-ToPath {
         $newPath = $currentPath.TrimEnd(';') + ';' + $PathToAdd
         [Environment]::SetEnvironmentVariable("PATH", $newPath, $Scope)
 
-        Write-ColorOutput "  ✓ Added $PathToAdd to $Scope PATH" "Green"
+        Write-ColorOutput "  âś“ Added $PathToAdd to $Scope PATH" "Green"
         return $true
     }
     catch {
-        Write-ColorOutput "  ✗ Failed to add $PathToAdd to $Scope PATH: $_" "Red"
+        Write-ColorOutput "  âś— Failed to add $PathToAdd to $Scope PATH: $_" "Red"
         return $false
     }
 }
@@ -72,16 +72,16 @@ function Set-CustomEnvironmentVariable {
         $currentValue = [Environment]::GetEnvironmentVariable($Name, $Scope)
 
         if ($currentValue -eq $Value) {
-            Write-ColorOutput "  ○ $Name is already set to $Value" "Gray"
+            Write-ColorOutput "  â—‹ $Name is already set to $Value" "Gray"
             return $true
         }
 
         [Environment]::SetEnvironmentVariable($Name, $Value, $Scope)
-        Write-ColorOutput "  ✓ Set $Name = $Value" "Green"
+        Write-ColorOutput "  âś“ Set $Name = $Value" "Green"
         return $true
     }
     catch {
-        Write-ColorOutput "  ✗ Failed to set $Name : $_" "Red"
+        Write-ColorOutput "  âś— Failed to set $Name : $_" "Red"
         return $false
     }
 }
@@ -159,10 +159,10 @@ foreach ($path in $systemPaths) {
 Write-ColorOutput "`n[Refreshing Environment]" "Cyan"
 try {
     Refresh-EnvironmentVariables
-    Write-ColorOutput "  ✓ Environment variables refreshed in current session" "Green"
+    Write-ColorOutput "  âś“ Environment variables refreshed in current session" "Green"
 }
 catch {
-    Write-ColorOutput "  ✗ Failed to refresh environment: $_" "Red"
+    Write-ColorOutput "  âś— Failed to refresh environment: $_" "Red"
 }
 
 # ========================================

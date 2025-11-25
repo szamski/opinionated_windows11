@@ -4,6 +4,19 @@ setup-log-*.txt
 # Hardware detection output
 hardware-info.json
 
+# Test and diagnostic scripts
+test-*.ps1
+check-*.ps1
+count-*.ps1
+find-*.ps1
+fix-*.ps1
+remove-*.ps1
+
+# Backup files
+*.backup
+*.bak
+setup.ps1.backup
+
 # Windows thumbnail cache
 Thumbs.db
 ehthumbs.db

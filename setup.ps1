@@ -1,4 +1,4 @@
-# Note: Administrator privileges required for most operations
+﻿# Note: Administrator privileges required for most operations
 # #Requires -RunAsAdministrator is commented to allow remote execution (irm | iex)
 
 <#
@@ -30,6 +30,12 @@
 .PARAMETER SkipWSL
     Skip WSL installation
 
+.PARAMETER SkipTelemetry
+    Skip disabling telemetry and privacy tracking
+
+.PARAMETER SkipPowerShell
+    Skip PowerShell profile configuration
+
 .PARAMETER DryRun
     Run in dry-run mode - shows what would be done without making any changes
 
@@ -56,6 +62,8 @@ param(
     [switch]$SkipEnvironment,
     [switch]$SkipDrivers,
     [switch]$SkipWSL,
+    [switch]$SkipTelemetry,
+    [switch]$SkipPowerShell,
     [switch]$DryRun,
     [switch]$NoMenu
 )
@@ -124,6 +132,8 @@ if (-not $PSScriptRoot) {
             if ($SkipEnvironment) { $paramString += "-SkipEnvironment" }
             if ($SkipDrivers) { $paramString += "-SkipDrivers" }
             if ($SkipWSL) { $paramString += "-SkipWSL" }
+            if ($SkipTelemetry) { $paramString += "-SkipTelemetry" }
+            if ($SkipPowerShell) { $paramString += "-SkipPowerShell" }
             if ($DryRun) { $paramString += "-DryRun" }
             if ($NoMenu) { $paramString += "-NoMenu" }
 
@@ -283,6 +293,8 @@ function Show-CustomMenu {
         Environment = $true
         Drivers = $true
         WSL = $true
+        Telemetry = $true
+        PowerShell = $true
         DryRun = $false
     }
 
@@ -294,6 +306,8 @@ function Show-CustomMenu {
         Write-ColorOutput "  3. [$(if ($options.Environment) { 'X' } else { ' ' })] Environment Variables" $(if ($options.Environment) { "Green" } else { "Gray" })
         Write-ColorOutput "  4. [$(if ($options.Drivers) { 'X' } else { ' ' })] Hardware Drivers" $(if ($options.Drivers) { "Green" } else { "Gray" })
         Write-ColorOutput "  5. [$(if ($options.WSL) { 'X' } else { ' ' })] Windows Subsystem for Linux (WSL)" $(if ($options.WSL) { "Green" } else { "Gray" })
+        Write-ColorOutput "  6. [$(if ($options.Telemetry) { 'X' } else { ' ' })] Disable Telemetry & Privacy Tracking" $(if ($options.Telemetry) { "Green" } else { "Gray" })
+        Write-ColorOutput "  7. [$(if ($options.PowerShell) { 'X' } else { ' ' })] PowerShell Profile (Starship)" $(if ($options.PowerShell) { "Green" } else { "Gray" })
         Write-ColorOutput ""
         Write-ColorOutput "  D. [$(if ($options.DryRun) { 'X' } else { ' ' })] Dry-Run Mode (Preview Only)" $(if ($options.DryRun) { "Cyan" } else { "Gray" })
         Write-ColorOutput ""
@@ -301,7 +315,7 @@ function Show-CustomMenu {
         Write-ColorOutput "  B. Back to Main Menu" "Yellow"
         Write-ColorOutput ""
 
-        $choice = Read-Host "Toggle option (1-5, D) or Start (S) / Back (B)"
+        $choice = Read-Host "Toggle option (1-7, D) or Start (S) / Back (B)"
 
         switch ($choice.ToUpper()) {
             '1' { $options.Software = -not $options.Software }
@@ -309,6 +323,8 @@ function Show-CustomMenu {
             '3' { $options.Environment = -not $options.Environment }
             '4' { $options.Drivers = -not $options.Drivers }
             '5' { $options.WSL = -not $options.WSL }
+            '6' { $options.Telemetry = -not $options.Telemetry }
+            '7' { $options.PowerShell = -not $options.PowerShell }
             'D' { $options.DryRun = -not $options.DryRun }
             'S' { return $options }
             'B' { return $null }
@@ -363,6 +379,8 @@ if (-not $NoMenu -and -not $PSBoundParameters.ContainsKey('SkipSoftware') -and
                 $SkipEnvironment = -not $customOptions.Environment
                 $SkipDrivers = -not $customOptions.Drivers
                 $SkipWSL = -not $customOptions.WSL
+                $SkipTelemetry = -not $customOptions.Telemetry
+                $SkipPowerShell = -not $customOptions.PowerShell
                 if ($customOptions.DryRun) {
                     $DryRun = $true
                     $env:DRYRUN_MODE = "true"
@@ -405,12 +423,38 @@ Write-ColorOutput "Log file: $LogFile" "Gray"
 # Check administrator privileges (skip in dry-run mode)
 if (-not $DryRun) {
     if (-not (Test-Administrator)) {
-        Write-ColorOutput "`nError: This script requires Administrator privileges!" "Red"
-        Write-ColorOutput "Please right-click and select 'Run as Administrator'" "Yellow"
-        Read-Host "Press Enter to exit"
-        exit 1
+        Write-ColorOutput "`nWarning: This script is not running with Administrator privileges!" "Yellow"
+        Write-ColorOutput "Some operations may fail without admin rights." "Yellow"
+        Write-ColorOutput "`nWould you like to restart with Administrator privileges? (Y/N)" "Cyan"
+        $response = Read-Host
+
+        if ($response -eq 'Y' -or $response -eq 'y') {
+            # Build parameters string
+            $paramString = @()
+            if ($SkipSoftware) { $paramString += "-SkipSoftware" }
+            if ($SkipSystemConfig) { $paramString += "-SkipSystemConfig" }
+            if ($SkipEnvironment) { $paramString += "-SkipEnvironment" }
+            if ($SkipDrivers) { $paramString += "-SkipDrivers" }
+            if ($SkipWSL) { $paramString += "-SkipWSL" }
+            if ($SkipTelemetry) { $paramString += "-SkipTelemetry" }
+            if ($SkipPowerShell) { $paramString += "-SkipPowerShell" }
+            if ($NoMenu) { $paramString += "-NoMenu" }
+
+            $scriptPath = $PSCommandPath
+            $params = $paramString -join " "
+
+            # Restart with admin privileges
+            Start-Process powershell -Verb RunAs -ArgumentList "-NoExit -ExecutionPolicy Bypass -File `"$scriptPath`" $params"
+            exit 0
+        }
+        else {
+            Write-ColorOutput "Continuing without Administrator privileges..." "Yellow"
+            Write-ColorOutput "Note: Some operations may fail." "Gray"
+        }
     }
-    Write-ColorOutput "✓ Running with Administrator privileges" "Green"
+    else {
+        Write-ColorOutput "✓ Running with Administrator privileges" "Green"
+    }
 }
 else {
     Write-ColorOutput "⚠ DRY-RUN MODE - No changes will be made" "Yellow"
@@ -440,6 +484,8 @@ Write-ColorOutput "  System Configuration: $(if ($SkipSystemConfig) { 'SKIPPED' 
 Write-ColorOutput "  Environment Variables: $(if ($SkipEnvironment) { 'SKIPPED' } else { 'ENABLED' })" $(if ($SkipEnvironment) { "Yellow" } else { "Green" })
 Write-ColorOutput "  Driver Installation: $(if ($SkipDrivers) { 'SKIPPED' } else { 'ENABLED' })" $(if ($SkipDrivers) { "Yellow" } else { "Green" })
 Write-ColorOutput "  WSL Installation: $(if ($SkipWSL) { 'SKIPPED' } else { 'ENABLED' })" $(if ($SkipWSL) { "Yellow" } else { "Green" })
+Write-ColorOutput "  Disable Telemetry: $(if ($SkipTelemetry) { 'SKIPPED' } else { 'ENABLED' })" $(if ($SkipTelemetry) { "Yellow" } else { "Green" })
+Write-ColorOutput "  PowerShell Config: $(if ($SkipPowerShell) { 'SKIPPED' } else { 'ENABLED' })" $(if ($SkipPowerShell) { "Yellow" } else { "Green" })
 
 Write-ColorOutput "`nPress Ctrl+C to cancel, or" "Yellow"
 Read-Host "Press Enter to continue"
@@ -476,11 +522,23 @@ if (-not $SkipSystemConfig) {
     }
 }
 
-# Module 3: Environment Variables
+# Module 3: Disable Telemetry & Privacy Tracking
+if (-not $SkipTelemetry) {
+    $executedModules++
+    $modulePath = Join-Path $ScriptRoot "scripts\disable-telemetry.ps1"
+    if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "Privacy & Telemetry" -Description "STEP 3: Disabling Telemetry & Privacy Tracking") {
+        $successfulModules++
+    }
+    else {
+        $failedModules += "Privacy & Telemetry"
+    }
+}
+
+# Module 4: Environment Variables
 if (-not $SkipEnvironment) {
     $executedModules++
     $modulePath = Join-Path $ScriptRoot "scripts\setup-env.ps1"
-    if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "Environment Setup" -Description "STEP 3: Setting Up Environment Variables") {
+    if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "Environment Setup" -Description "STEP 4: Setting Up Environment Variables") {
         $successfulModules++
     }
     else {
@@ -488,22 +546,54 @@ if (-not $SkipEnvironment) {
     }
 }
 
-# Module 4: Hardware Detection & Driver Installation
+# Module 5: PowerShell Profile Configuration
+if (-not $SkipPowerShell) {
+    $executedModules++
+    $modulePath = Join-Path $ScriptRoot "scripts\configure-powershell.ps1"
+    if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "PowerShell Profile" -Description "STEP 5: Configuring PowerShell Profile & Starship") {
+        $successfulModules++
+    }
+    else {
+        $failedModules += "PowerShell Profile"
+    }
+}
+
+# Module 6: Scoop Package Manager
+$executedModules++
+$modulePath = Join-Path $ScriptRoot "scripts\install-scoop.ps1"
+if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "Scoop & Dev Tools" -Description "STEP 6: Installing Scoop, GCC & tree-sitter") {
+    $successfulModules++
+}
+else {
+    $failedModules += "Scoop & Dev Tools"
+}
+
+# Module 7: Nerd Fonts
+$executedModules++
+$modulePath = Join-Path $ScriptRoot "scripts\install-fonts.ps1"
+if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "Nerd Fonts" -Description "STEP 7: Installing CaskaydiaCove Nerd Font") {
+    $successfulModules++
+}
+else {
+    $failedModules += "Nerd Fonts"
+}
+
+# Module 8: Hardware Detection & Driver Installation
 if (-not $SkipDrivers) {
-    # Step 4a: Detect Hardware
+    # Step 8a: Detect Hardware
     $executedModules++
     $modulePath = Join-Path $ScriptRoot "scripts\detect-hardware.ps1"
-    if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "Hardware Detection" -Description "STEP 4a: Detecting System Hardware") {
+    if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "Hardware Detection" -Description "STEP 8a: Detecting System Hardware") {
         $successfulModules++
     }
     else {
         $failedModules += "Hardware Detection"
     }
 
-    # Step 4b: Install Drivers
+    # Step 8b: Install Drivers
     $executedModules++
     $modulePath = Join-Path $ScriptRoot "scripts\install-drivers.ps1"
-    if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "Driver Installation" -Description "STEP 4b: Installing Hardware Drivers") {
+    if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "Driver Installation" -Description "STEP 8b: Installing Hardware Drivers") {
         $successfulModules++
     }
     else {
@@ -511,11 +601,11 @@ if (-not $SkipDrivers) {
     }
 }
 
-# Module 5: WSL Installation
+# Module 9: WSL Installation
 if (-not $SkipWSL) {
     $executedModules++
     $modulePath = Join-Path $ScriptRoot "scripts\enable-wsl.ps1"
-    if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "WSL Installation" -Description "STEP 5: Installing Windows Subsystem for Linux") {
+    if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "WSL Installation" -Description "STEP 9: Installing Windows Subsystem for Linux") {
         $successfulModules++
     }
     else {
