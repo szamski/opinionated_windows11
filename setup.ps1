@@ -1,4 +1,4 @@
-# Note: Administrator privileges required for most operations
+﻿# Note: Administrator privileges required for most operations
 # #Requires -RunAsAdministrator is commented to allow remote execution (irm | iex)
 
 <#

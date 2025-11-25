@@ -88,7 +88,7 @@ function Install-Package {
         }
     }
     catch {
-        Write-ColorOutput "  X Error installing $PackageName: $_" "Red"
+        Write-ColorOutput "  X Error installing ${PackageName}: $($_.Exception.Message)" "Red"
         return $false
     }
 }
