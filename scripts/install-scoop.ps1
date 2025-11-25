@@ -165,10 +165,70 @@ if (Install-ScoopPackage -PackageName "make") {
 # ========================================
 # Step 5: Install grep
 # ========================================
-Write-ColorOutput "`n[Step 4: make Installation]" "Cyan"
+Write-ColorOutput "`n[Step 5: grep Installation]" "Cyan"
 $totalSteps++
 
 if (Install-ScoopPackage -PackageName "grep") {
+    $successCount++
+}
+
+# ========================================
+# Step 6: Install 7zip
+# ========================================
+Write-ColorOutput "`n[Step 6: 7zip Installation]" "Cyan"
+$totalSteps++
+
+if (Install-ScoopPackage -PackageName "7zip") {
+    $successCount++
+}
+
+# ========================================
+# Step 7: Install bat (better cat)
+# ========================================
+Write-ColorOutput "`n[Step 7: bat Installation]" "Cyan"
+$totalSteps++
+
+if (Install-ScoopPackage -PackageName "bat") {
+    $successCount++
+}
+
+# ========================================
+# Step 8: Install eza (modern ls)
+# ========================================
+Write-ColorOutput "`n[Step 8: eza Installation]" "Cyan"
+$totalSteps++
+
+if (Install-ScoopPackage -PackageName "eza") {
+    $successCount++
+}
+
+# ========================================
+# Step 9: Install zoxide (smart cd)
+# ========================================
+Write-ColorOutput "`n[Step 9: zoxide Installation]" "Cyan"
+$totalSteps++
+
+if (Install-ScoopPackage -PackageName "zoxide") {
+    $successCount++
+}
+
+# ========================================
+# Step 10: Install btop (system monitor)
+# ========================================
+Write-ColorOutput "`n[Step 10: btop Installation]" "Cyan"
+$totalSteps++
+
+if (Install-ScoopPackage -PackageName "btop") {
+    $successCount++
+}
+
+# ========================================
+# Step 11: Install lazygit (Git TUI)
+# ========================================
+Write-ColorOutput "`n[Step 11: lazygit Installation]" "Cyan"
+$totalSteps++
+
+if (Install-ScoopPackage -PackageName "lazygit" -Bucket "extras") {
     $successCount++
 }
 

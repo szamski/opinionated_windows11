@@ -76,6 +76,16 @@
         {
           "id": "Notion.NotionCalendar",
           "name": "Notion Calendar"
+        },
+        {
+          "id": "XP8JNQFBQH6PVF",
+          "name": "Perplexity",
+          "source": "msstore"
+        },
+        {
+          "id": "XPDLNJ2FWVCXR1",
+          "name": "PDFgear",
+          "source": "msstore"
         }
       ]
     },
@@ -97,6 +107,11 @@
         {
           "id": "ByteDance.Lark",
           "name": "Lark"
+        },
+        {
+          "id": "9NKSQGP7F2NH",
+          "name": "WhatsApp",
+          "source": "msstore"
         }
       ]
     },
