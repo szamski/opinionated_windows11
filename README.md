@@ -18,6 +18,8 @@ I got tired of the Windows setup dance—clicking through installers, downloadin
 
 ## 🚀 Quick Start
 
+![Script Setup Screen](assets/setup.png)
+
 ### One Command, That's It
 
 Open PowerShell as Administrator:
