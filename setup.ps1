@@ -504,11 +504,32 @@ $executedModules = 0
 $successfulModules = 0
 $failedModules = @()
 
-# Module 1: Software Installation
+# Module 0: Prerequisites (Git, PowerShell 7)
+Write-ColorOutput "`nInstalling prerequisites first..." "Cyan"
+$executedModules++
+$modulePath = Join-Path $ScriptRoot "scripts\install-prerequisites.ps1"
+if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "Prerequisites" -Description "STEP 0: Installing Git & PowerShell 7 (Prerequisites)") {
+    $successfulModules++
+}
+else {
+    $failedModules += "Prerequisites"
+}
+
+# Module 1: Scoop Package Manager
+$executedModules++
+$modulePath = Join-Path $ScriptRoot "scripts\install-scoop.ps1"
+if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "Scoop & Dev Tools" -Description "STEP 1: Installing Scoop & CLI Tools") {
+    $successfulModules++
+}
+else {
+    $failedModules += "Scoop & Dev Tools"
+}
+
+# Module 2: Software Installation
 if (-not $SkipSoftware) {
     $executedModules++
     $modulePath = Join-Path $ScriptRoot "scripts\install-software.ps1"
-    if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "Software Installation" -Description "STEP 1: Installing Software Packages") {
+    if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "Software Installation" -Description "STEP 2: Installing Software Packages") {
         $successfulModules++
     }
     else {
@@ -516,11 +537,11 @@ if (-not $SkipSoftware) {
     }
 }
 
-# Module 2: System Configuration
+# Module 3: System Configuration
 if (-not $SkipSystemConfig) {
     $executedModules++
     $modulePath = Join-Path $ScriptRoot "scripts\configure-system.ps1"
-    if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "System Configuration" -Description "STEP 2: Configuring Windows Settings") {
+    if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "System Configuration" -Description "STEP 3: Configuring Windows Settings") {
         $successfulModules++
     }
     else {
@@ -528,11 +549,11 @@ if (-not $SkipSystemConfig) {
     }
 }
 
-# Module 3: Disable Telemetry and Privacy Tracking
+# Module 4: Disable Telemetry and Privacy Tracking (Optional - user will be prompted)
 if (-not $SkipTelemetry) {
     $executedModules++
     $modulePath = Join-Path $ScriptRoot "scripts\disable-telemetry.ps1"
-    if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "Privacy & Telemetry" -Description "STEP 3: Disabling Telemetry & Privacy Tracking") {
+    if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "Privacy & Telemetry" -Description "STEP 4: Disabling Telemetry & Privacy Tracking (Optional)") {
         $successfulModules++
     }
     else {
@@ -540,11 +561,11 @@ if (-not $SkipTelemetry) {
     }
 }
 
-# Module 4: Environment Variables
+# Module 5: Environment Variables
 if (-not $SkipEnvironment) {
     $executedModules++
     $modulePath = Join-Path $ScriptRoot "scripts\setup-env.ps1"
-    if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "Environment Setup" -Description "STEP 4: Setting Up Environment Variables") {
+    if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "Environment Setup" -Description "STEP 5: Setting Up Environment Variables") {
         $successfulModules++
     }
     else {
@@ -552,26 +573,16 @@ if (-not $SkipEnvironment) {
     }
 }
 
-# Module 5: PowerShell Profile Configuration
-if (-not $SkipPowerShell) {
+# Module 6: Git and GitHub Configuration
+if (-not $SkipGitConfig) {
     $executedModules++
-    $modulePath = Join-Path $ScriptRoot "scripts\configure-powershell.ps1"
-    if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "PowerShell Profile" -Description "STEP 5: Configuring PowerShell Profile & Starship") {
+    $modulePath = Join-Path $ScriptRoot "scripts\configure-git.ps1"
+    if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "Git and GitHub Config" -Description "STEP 6: Configuring Git and GitHub") {
         $successfulModules++
     }
     else {
-        $failedModules += "PowerShell Profile"
+        $failedModules += "Git and GitHub Config"
     }
-}
-
-# Module 6: Scoop Package Manager
-$executedModules++
-$modulePath = Join-Path $ScriptRoot "scripts\install-scoop.ps1"
-if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "Scoop & Dev Tools" -Description "STEP 6: Installing Scoop, GCC & tree-sitter") {
-    $successfulModules++
-}
-else {
-    $failedModules += "Scoop & Dev Tools"
 }
 
 # Module 7: Nerd Fonts
@@ -584,22 +595,34 @@ else {
     $failedModules += "Nerd Fonts"
 }
 
-# Module 8: Hardware Detection & Driver Installation
+# Module 8: PowerShell Profile Configuration
+if (-not $SkipPowerShell) {
+    $executedModules++
+    $modulePath = Join-Path $ScriptRoot "scripts\configure-powershell.ps1"
+    if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "PowerShell Profile" -Description "STEP 8: Configuring PowerShell Profile & Starship") {
+        $successfulModules++
+    }
+    else {
+        $failedModules += "PowerShell Profile"
+    }
+}
+
+# Module 9: Hardware Detection & Driver Installation
 if (-not $SkipDrivers) {
-    # Step 8a: Detect Hardware
+    # Step 9a: Detect Hardware
     $executedModules++
     $modulePath = Join-Path $ScriptRoot "scripts\detect-hardware.ps1"
-    if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "Hardware Detection" -Description "STEP 8a: Detecting System Hardware") {
+    if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "Hardware Detection" -Description "STEP 9a: Detecting System Hardware") {
         $successfulModules++
     }
     else {
         $failedModules += "Hardware Detection"
     }
 
-    # Step 8b: Install Drivers
+    # Step 9b: Install Drivers
     $executedModules++
     $modulePath = Join-Path $ScriptRoot "scripts\install-drivers.ps1"
-    if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "Driver Installation" -Description "STEP 8b: Installing Hardware Drivers") {
+    if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "Driver Installation" -Description "STEP 9b: Installing Hardware Drivers") {
         $successfulModules++
     }
     else {
@@ -607,27 +630,15 @@ if (-not $SkipDrivers) {
     }
 }
 
-# Module 9: WSL Installation
+# Module 10: WSL Installation
 if (-not $SkipWSL) {
     $executedModules++
     $modulePath = Join-Path $ScriptRoot "scripts\enable-wsl.ps1"
-    if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "WSL Installation" -Description "STEP 9: Installing Windows Subsystem for Linux") {
+    if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "WSL Installation" -Description "STEP 10: Installing Windows Subsystem for Linux") {
         $successfulModules++
     }
     else {
         $failedModules += "WSL Installation"
-    }
-}
-
-# Module 10: Git and GitHub Configuration
-if (-not $SkipGitConfig) {
-    $executedModules++
-    $modulePath = Join-Path $ScriptRoot "scripts\configure-git.ps1"
-    if (Invoke-ScriptModule -ModulePath $modulePath -ModuleName "Git and GitHub Config" -Description "STEP 10: Configuring Git and GitHub") {
-        $successfulModules++
-    }
-    else {
-        $failedModules += "Git and GitHub Config"
     }
 }
 

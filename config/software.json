@@ -105,10 +105,6 @@
           "name": "Zoom"
         },
         {
-          "id": "ByteDance.Lark",
-          "name": "Lark"
-        },
-        {
           "id": "9NKSQGP7F2NH",
           "name": "WhatsApp",
           "source": "msstore"
@@ -146,14 +142,6 @@
         {
           "id": "NordSecurity.NordVPN",
           "name": "NordVPN"
-        },
-        {
-          "id": "FocusriteAudioEngineeringLtd.FocusriteControl2",
-          "name": "Focusrite Control 2"
-        },
-        {
-          "id": "Microsoft.PowerToys",
-          "name": "PowerToys"
         },
         {
           "id": "Fastfetch-cli.Fastfetch",

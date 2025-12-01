@@ -89,15 +89,17 @@ function Install-GPUDrivers {
         switch ($gpu.Vendor) {
             "NVIDIA" {
                 Write-ColorOutput "`n  Detected NVIDIA GPU: $($gpu.Name)" "White"
-                if (Install-DriverPackage -PackageId "Nvidia.GeForceExperience" -PackageName "NVIDIA GeForce Experience" -DeviceType "NVIDIA GPU") {
-                    $installedCount++
-                }
+                Write-ColorOutput "  i NVIDIA drivers are recommended from:" "Gray"
+                Write-ColorOutput "    https://www.nvidia.com/Download/index.aspx" "Cyan"
+                Write-ColorOutput "  Or install via Windows Update" "Gray"
+                Write-ColorOutput "  Note: GeForce Experience (bloatware) is NOT installed by this script" "Yellow"
             }
             "AMD" {
                 Write-ColorOutput "`n  Detected AMD GPU: $($gpu.Name)" "White"
-                if (Install-DriverPackage -PackageId "AMD.AMDSoftwareAdrenalinEdition" -PackageName "AMD Adrenalin" -DeviceType "AMD GPU") {
-                    $installedCount++
-                }
+                Write-ColorOutput "  i AMD drivers are available at:" "Gray"
+                Write-ColorOutput "    https://www.amd.com/en/support" "Cyan"
+                Write-ColorOutput "  Or install via Windows Update" "Gray"
+                Write-ColorOutput "  Note: Adrenalin software (bloatware) is NOT installed by this script" "Yellow"
             }
             "Intel" {
                 Write-ColorOutput "`n  Detected Intel GPU: $($gpu.Name)" "White"
@@ -110,7 +112,7 @@ function Install-GPUDrivers {
         }
     }
 
-    Write-ColorOutput "`n  GPU drivers installation: $installedCount/$($GPUList.Count) completed" "White"
+    Write-ColorOutput "`n  GPU drivers should be installed manually or via Windows Update" "White"
 }
 
 function Install-AudioDrivers {
@@ -134,22 +136,8 @@ function Install-AudioDrivers {
 
         $processedVendors += $device.Vendor
 
-        switch ($device.Vendor) {
-            "Focusrite" {
-                Write-ColorOutput "`n  Detected Focusrite Audio: $($device.Name)" "White"
-                # Focusrite drivers need to be downloaded manually
-                Write-ColorOutput "  i Focusrite drivers should be downloaded from:" "Gray"
-                Write-ColorOutput "    https://focusrite.com/downloads" "Cyan"
-            }
-            "Realtek" {
-                Write-ColorOutput "`n  Detected Realtek Audio: $($device.Name)" "White"
-                Write-ColorOutput "  i Realtek audio drivers are usually included with Windows Update" "Gray"
-            }
-            default {
-                Write-ColorOutput "`n  Detected: $($device.Name) [$($device.Vendor)]" "White"
-                Write-ColorOutput "  i Audio drivers are typically installed automatically via Windows Update" "Gray"
-            }
-        }
+        Write-ColorOutput "`n  Detected: $($device.Name)" "White"
+        Write-ColorOutput "  i Audio drivers are typically installed automatically via Windows Update" "Gray"
     }
 }
 
@@ -208,37 +196,33 @@ function Install-ChipsetDrivers {
         "Intel" {
             Write-ColorOutput "  i Intel chipset drivers available at:" "Gray"
             Write-ColorOutput "    https://www.intel.com/content/www/us/en/download-center/home.html" "Cyan"
-            Write-ColorOutput "  Or install Intel Driver & Support Assistant via winget:" "Gray"
-            Install-DriverPackage -PackageId "Intel.IntelDriverAndSupportAssistant" -PackageName "Intel DSA" -DeviceType "Intel System"
+            Write-ColorOutput "  Or via Windows Update" "Gray"
         }
         "AMD" {
             Write-ColorOutput "  i AMD chipset drivers available at:" "Gray"
             Write-ColorOutput "    https://www.amd.com/en/support" "Cyan"
+            Write-ColorOutput "  Or via Windows Update" "Gray"
         }
         default {
             Write-ColorOutput "  Unknown CPU vendor: $($CPUInfo.Vendor)" "Yellow"
         }
     }
 
-    # Lenovo-specific drivers
+    # Manufacturer-specific information (no bloatware installed)
     if ($SystemInfo.Manufacturer -match "Lenovo") {
         Write-ColorOutput "`n  Detected Lenovo system" "White"
-        Write-ColorOutput "  Installing Lenovo System Update..." "Cyan"
-        if (Install-DriverPackage -PackageId "Lenovo.SystemUpdate" -PackageName "Lenovo System Update" -DeviceType "Lenovo System") {
-            Write-ColorOutput "  i Use Lenovo System Update to install manufacturer-specific drivers" "Gray"
-        }
+        Write-ColorOutput "  i If you need manufacturer drivers, you can manually download:" "Gray"
+        Write-ColorOutput "    Lenovo Vantage from Microsoft Store (optional)" "Gray"
     }
-    # Dell-specific drivers
     elseif ($SystemInfo.Manufacturer -match "Dell") {
         Write-ColorOutput "`n  Detected Dell system" "White"
-        Write-ColorOutput "  Installing Dell Command Update..." "Cyan"
-        Install-DriverPackage -PackageId "Dell.CommandUpdate" -PackageName "Dell Command Update" -DeviceType "Dell System"
+        Write-ColorOutput "  i If you need manufacturer drivers, you can manually download:" "Gray"
+        Write-ColorOutput "    https://www.dell.com/support/home/drivers" "Cyan"
     }
-    # HP-specific drivers
     elseif ($SystemInfo.Manufacturer -match "HP|Hewlett") {
         Write-ColorOutput "`n  Detected HP system" "White"
-        Write-ColorOutput "  i HP Support Assistant may be pre-installed" "Gray"
-        Write-ColorOutput "  Download from: https://support.hp.com/us-en/help/hp-support-assistant" "Cyan"
+        Write-ColorOutput "  i If you need manufacturer drivers, you can manually download:" "Gray"
+        Write-ColorOutput "    https://support.hp.com/drivers" "Cyan"
     }
 }
 

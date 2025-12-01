@@ -30,9 +30,10 @@ The script will:
 1. Clone itself to your machine
 2. Show you an interactive menu
 3. Let you choose what to install
-4. Get out of your way
+4. Automatically install Git and PowerShell 7 first (if not present)
+5. Get out of your way
 
-**Note:** You need Git installed. If you don't have it, the script will tell you what to do.
+**Note:** If you don't have Git, the script will install it automatically as the first step.
 
 ### Or Clone First (If You're That Type)
 
@@ -73,11 +74,10 @@ cd Omawin
 - **Obsidian** - notes that make sense
 - **1Password** - because password123 isn't cutting it
 - **Chrome** - yeah, yeah, I know
-- **Discord, Slack, Zoom, Lark, WhatsApp** - work and play
+- **Discord, Slack, Zoom, WhatsApp** - work and play
 - **Notion Calendar** - calendar that actually works
 - **Spotify** - for the coding soundtrack
 - **LocalSend** - AirDrop for everything
-- **PowerToys** - Windows utilities that should be built-in
 - **Steam, SteelSeries GG** - because work-life balance
 
 ### 🎨 Creative Stuff
@@ -86,14 +86,19 @@ cd Omawin
 - **OBS Studio** - streaming and recording
 - **PDFgear** - PDF reader and editor
 
-### 🔒 Privacy & Security (52 Settings)
+### 🔒 Privacy & Security (60+ Settings) - OPTIONAL
+- User is prompted before disabling telemetry (always optional)
+- Based on Win11Debloat best practices
 - Disable telemetry and diagnostic data collection
 - Turn off advertising ID and activity tracking
+- Disable online speech recognition and input personalization
+- Restrict ink and text collection
 - Disable Cortana and web search in Start Menu
 - Block location tracking and cloud content suggestions
 - Disable Windows Error Reporting
 - Stop scheduled telemetry tasks
 - Configure app privacy settings
+- Disable Microsoft Edge telemetry and diagnostic data
 - Disable OneDrive file sync (optional)
 - Keep Windows Security and Updates enabled
 
@@ -107,12 +112,12 @@ cd Omawin
 - Disable recent documents tracking
 
 ### 🖥️ Smart Driver Detection
-The script actually looks at your hardware and installs the right stuff:
-- NVIDIA/AMD/Intel graphics drivers
-- Manufacturer tools (Lenovo, Dell, HP)
-- Audio drivers (including Intel SST)
-- Network adapters (WiFi, Ethernet)
-- Chipset drivers
+The script detects your hardware and provides guidance (no bloatware):
+- NVIDIA/AMD/Intel graphics drivers (manual download links, no GeForce Experience or Adrenalin)
+- Manufacturer tools (Lenovo System Update, Dell Command Update, HP Support Assistant)
+- Audio drivers (via Windows Update or manufacturer)
+- Network adapters (WiFi, Ethernet via Windows Update)
+- Chipset drivers (Intel DSA if applicable)
 - Everything else through Windows Update
 
 ### 🐙 Git & GitHub Configuration
@@ -125,13 +130,13 @@ The script actually looks at your hardware and installs the right stuff:
 
 ## 📦 What Gets Installed
 
-### Software Packages (35 total)
+### Software Packages (32 total)
 - **Development**: Git, Node.js, VS Code, Docker, Python, FFmpeg, cURL, Neovim, PowerShell 7
 - **Terminal**: Windows Terminal, Starship
 - **Productivity**: Claude, Perplexity, PDFgear, Obsidian, 1Password, Chrome, Notion Calendar
-- **Communication**: Discord, Slack, Zoom, Lark, WhatsApp
+- **Communication**: Discord, Slack, Zoom, WhatsApp
 - **Creative**: Affinity, Bambu Studio, OBS Studio
-- **Utilities**: LocalSend, Spotify, NordVPN, PowerToys, fastfetch, fzf
+- **Utilities**: LocalSend, Spotify, NordVPN, fastfetch, fzf
 - **Gaming**: Steam, SteelSeries GG
 
 ### Scoop Packages (11 total)
@@ -182,19 +187,20 @@ Just run `.\setup.ps1` and pick what you want:
 
 ## 📋 Installation Modules
 
-The setup process consists of 11 independent modules:
+The setup process consists of 11 modules executed in optimal dependency order:
 
-1. **Software Installation** - Install 35 packages via winget/Microsoft Store
-2. **System Configuration** - Apply 17 registry tweaks for better UX
-3. **Privacy & Telemetry** - Disable 52 tracking and telemetry settings
-4. **Environment Variables** - Configure PATH and development environment
-5. **PowerShell Profile** - Set up Starship, aliases, and PSReadLine
-6. **Scoop & Dev Tools** - Install 11 modern CLI tools
-7. **Nerd Fonts** - Install CaskaydiaCove font for terminal icons
-8. **Hardware Detection** - Detect CPU, GPU, audio, network hardware
-9. **Driver Installation** - Install manufacturer-specific drivers
-10. **WSL Installation** - Enable WSL2 and install Ubuntu
-11. **Git & GitHub Config** - Set up Git credentials and SSH keys
+0. **Prerequisites** - Install Git and PowerShell 7 (required for everything else)
+1. **Scoop & Dev Tools** - Install Scoop package manager and 11 modern CLI tools
+2. **Software Installation** - Install 32 packages via winget/Microsoft Store
+3. **System Configuration** - Apply 17 registry tweaks for better UX
+4. **Privacy & Telemetry** - Disable 60+ tracking and telemetry settings (optional, user prompted, based on Win11Debloat)
+5. **Environment Variables** - Configure PATH and development environment
+6. **Git & GitHub Config** - Set up Git credentials and SSH keys
+7. **Nerd Fonts** - Download and install CaskaydiaCove from GitHub (based on NerdFontInstaller)
+8. **PowerShell Profile** - Set up Starship, aliases, and PSReadLine
+9. **Hardware Detection** - Detect CPU, GPU, audio, network hardware
+10. **Driver Installation** - Install manufacturer-specific drivers (no bloatware)
+11. **WSL Installation** - Enable WSL2 and install Ubuntu
 
 ## 🔧 After Installation
 
